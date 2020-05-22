@@ -157,17 +157,42 @@ func (f Field) toSchema() *Schema {
 
 		if f.LoaderKey != "" {
 			// handlers e.t.c.
+			names := []string{}
 			for _, l := range f.Loader {
-				ref := NewSchema()
-				ref.setRef(l)
-				s.ArrayItems.AnyOf = append(s.ArrayItems.AnyOf, ref)
+				sub := NewSchema()
+
+				sif := NewSchema()
+				{
+					split := strings.Split(l, ".")
+					name := split[len(split)-1]
+
+					tmp := NewSchema()
+					tmp.Const = name
+					names = append(names, name)
+
+					sif.Properties[f.LoaderKey] = tmp
+					sub.If = sif
+				}
+
+				sthen := NewSchema()
+				{
+					sthen.setRef(l)
+					sub.Then = sthen
+				}
+
+				s.ArrayItems.AllOf = append(s.ArrayItems.AllOf, sub)
 			}
 
-			inlineType := NewSchema()
-			inlineType.setType("string")
 			inline := NewSchema()
-			inline.Properties[f.LoaderKey] = inlineType
-			s.ArrayItems.AnyOf = append(s.ArrayItems.AnyOf, inline)
+			{
+				tmp := NewSchema()
+				tmp.setType("string")
+				tmp.Enum = names
+				tmp.Description = fmt.Sprintf("%s name\n%s", f.LoaderKey, f.description("string"))
+
+				inline.Properties[f.LoaderKey] = tmp
+				s.ArrayItems.AllOf = append(s.ArrayItems.AllOf, inline)
+			}
 
 			s.ArrayItems.Required = []string{f.LoaderKey}
 		} else {
@@ -230,7 +255,7 @@ func (f *Field) populate(s interface{}) {
 
 	case reflect.Ptr:
 		// discard the pointer, use the underlying type
-		f.populate(elemVal)
+		f.populate(elemVal())
 
 	case reflect.Slice:
 		f.Array = true
@@ -238,7 +263,7 @@ func (f *Field) populate(s interface{}) {
 			Module: f.Module,
 			Name:   f.Name + ".nest",
 		}
-		f.Nest.populate(elemVal)
+		f.Nest.populate(elemVal())
 
 	case reflect.Map:
 		f.Map = true
@@ -246,7 +271,7 @@ func (f *Field) populate(s interface{}) {
 			Module: f.Module,
 			Name:   f.Name + ".nest",
 		}
-		f.Nest.populate(elemVal)
+		f.Nest.populate(elemVal())
 
 	default:
 		f.populateStruct(v.Type())
@@ -279,6 +304,8 @@ func (f *Field) populateStruct(t reflect.Type) {
 			split := strings.Fields(caddyTag)
 			namespace := split[0] // 1 is inline_key
 			namespace = strings.TrimPrefix(namespace, "namespace=")
+			// use namespace as module
+			field.Module = namespace
 
 			if len(split) > 1 {
 				field.LoaderKey = strings.TrimPrefix(split[1], "inline_key=")
@@ -288,13 +315,7 @@ func (f *Field) populateStruct(t reflect.Type) {
 				field.Loader = append(field.Loader, namespace+"."+key)
 			}
 		} else {
-
-			// check for nesting
 			vf := reflect.Zero(ff.Type)
-			if ff.Type.Kind() == reflect.Ptr {
-				vf = reflect.Zero(ff.Type.Elem())
-			}
-
 			field.populate(vf.Interface())
 		}
 

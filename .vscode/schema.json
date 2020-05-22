@@ -71,17 +71,40 @@
                         "required": [
                             "filter"
                         ],
-                        "anyOf": [
+                        "allOf": [
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.filter.delete"
+                                "if": {
+                                    "properties": {
+                                        "filter": {
+                                            "const": "delete"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.filter.delete"
+                                }
                             },
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.filter.ip_mask"
+                                "if": {
+                                    "properties": {
+                                        "filter": {
+                                            "const": "ip_mask"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.filter.ip_mask"
+                                }
                             },
                             {
                                 "properties": {
                                     "filter": {
-                                        "type": "string"
+                                        "description": "filter name\nstring\nModule: caddy.logging.encoders.filter",
+                                        "type": "string",
+                                        "enum": [
+                                            "delete",
+                                            "ip_mask"
+                                        ]
                                     }
                                 }
                             }
@@ -89,32 +112,85 @@
                     }
                 },
                 "wrap": {
-                    "description": "array\nModule: caddy.logging.encoders.filter",
+                    "description": "array\nModule: caddy.logging.encoders",
                     "type": "array",
                     "items": {
                         "required": [
                             "format"
                         ],
-                        "anyOf": [
+                        "allOf": [
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.json"
+                                "if": {
+                                    "properties": {
+                                        "format": {
+                                            "const": "single_field"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.single_field"
+                                }
                             },
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.logfmt"
+                                "if": {
+                                    "properties": {
+                                        "format": {
+                                            "const": "console"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.console"
+                                }
                             },
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.single_field"
+                                "if": {
+                                    "properties": {
+                                        "format": {
+                                            "const": "filter"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.filter"
+                                }
                             },
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.console"
+                                "if": {
+                                    "properties": {
+                                        "format": {
+                                            "const": "json"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.json"
+                                }
                             },
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.filter"
+                                "if": {
+                                    "properties": {
+                                        "format": {
+                                            "const": "logfmt"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.logfmt"
+                                }
                             },
                             {
                                 "properties": {
                                     "format": {
-                                        "type": "string"
+                                        "description": "format name\nstring\nModule: caddy.logging.encoders",
+                                        "type": "string",
+                                        "enum": [
+                                            "single_field",
+                                            "console",
+                                            "filter",
+                                            "json",
+                                            "logfmt"
+                                        ]
                                     }
                                 }
                             }
@@ -238,32 +314,85 @@
             "type": "object",
             "properties": {
                 "fallback": {
-                    "description": "array\nModule: caddy.logging.encoders.single_field",
+                    "description": "array\nModule: caddy.logging.encoders",
                     "type": "array",
                     "items": {
                         "required": [
                             "format"
                         ],
-                        "anyOf": [
+                        "allOf": [
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.console"
+                                "if": {
+                                    "properties": {
+                                        "format": {
+                                            "const": "json"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.json"
+                                }
                             },
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.filter"
+                                "if": {
+                                    "properties": {
+                                        "format": {
+                                            "const": "logfmt"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.logfmt"
+                                }
                             },
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.json"
+                                "if": {
+                                    "properties": {
+                                        "format": {
+                                            "const": "single_field"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.single_field"
+                                }
                             },
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.logfmt"
+                                "if": {
+                                    "properties": {
+                                        "format": {
+                                            "const": "console"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.console"
+                                }
                             },
                             {
-                                "$ref": "#/definitions/caddy.logging.encoders.single_field"
+                                "if": {
+                                    "properties": {
+                                        "format": {
+                                            "const": "filter"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.logging.encoders.filter"
+                                }
                             },
                             {
                                 "properties": {
                                     "format": {
-                                        "type": "string"
+                                        "description": "format name\nstring\nModule: caddy.logging.encoders",
+                                        "type": "string",
+                                        "enum": [
+                                            "json",
+                                            "logfmt",
+                                            "single_field",
+                                            "console",
+                                            "filter"
+                                        ]
                                     }
                                 }
                             }
@@ -455,65 +584,228 @@
                                                     "type": "string"
                                                 },
                                                 "handle": {
-                                                    "description": "array\nModule: http",
+                                                    "description": "array\nModule: http.handlers",
                                                     "type": "array",
                                                     "items": {
                                                         "required": [
                                                             "handler"
                                                         ],
-                                                        "anyOf": [
+                                                        "allOf": [
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.templates"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "encode"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.encode"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.authentication"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "file_server"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.file_server"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.encode"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "static_response"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.static_response"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.file_server"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "subroute"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.subroute"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.static_response"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "hmac"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.hmac"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.error"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "json_parse"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.json_parse"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.exec"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "reverse_proxy"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.reverse_proxy"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.reverse_proxy"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "error"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.error"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.subroute"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "templates"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.templates"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.visitor_ip"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "visitor_ip"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.visitor_ip"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.headers"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "request_body"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.request_body"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.request_body"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "rewrite"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.rewrite"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.rewrite"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "vars"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.vars"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.vars"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "authentication"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.authentication"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.hmac"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "exec"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.exec"
+                                                                }
                                                             },
                                                             {
-                                                                "$ref": "#/definitions/http.handlers.json_parse"
+                                                                "if": {
+                                                                    "properties": {
+                                                                        "handler": {
+                                                                            "const": "headers"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "then": {
+                                                                    "$ref": "#/definitions/http.handlers.headers"
+                                                                }
                                                             },
                                                             {
                                                                 "properties": {
                                                                     "handler": {
-                                                                        "type": "string"
+                                                                        "description": "handler name\nstring\nModule: http.handlers",
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "encode",
+                                                                            "file_server",
+                                                                            "static_response",
+                                                                            "subroute",
+                                                                            "hmac",
+                                                                            "json_parse",
+                                                                            "reverse_proxy",
+                                                                            "error",
+                                                                            "templates",
+                                                                            "visitor_ip",
+                                                                            "request_body",
+                                                                            "rewrite",
+                                                                            "vars",
+                                                                            "authentication",
+                                                                            "exec",
+                                                                            "headers"
+                                                                        ]
                                                                     }
                                                                 }
                                                             }
@@ -521,7 +813,7 @@
                                                     }
                                                 },
                                                 "match": {
-                                                    "description": "array\nModule: http",
+                                                    "description": "array\nModule: http.matchers",
                                                     "type": "array",
                                                     "items": {
                                                         "properties": {
@@ -598,20 +890,33 @@
                                 }
                             },
                             "listener_wrappers": {
-                                "description": "array\nModule: http",
+                                "description": "array\nModule: caddy.listeners",
                                 "type": "array",
                                 "items": {
                                     "required": [
                                         "wrapper"
                                     ],
-                                    "anyOf": [
+                                    "allOf": [
                                         {
-                                            "$ref": "#/definitions/caddy.listeners.tls"
+                                            "if": {
+                                                "properties": {
+                                                    "wrapper": {
+                                                        "const": "tls"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/caddy.listeners.tls"
+                                            }
                                         },
                                         {
                                             "properties": {
                                                 "wrapper": {
-                                                    "type": "string"
+                                                    "description": "wrapper name\nstring\nModule: caddy.listeners",
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "tls"
+                                                    ]
                                                 }
                                             }
                                         }
@@ -667,65 +972,228 @@
                                             "type": "string"
                                         },
                                         "handle": {
-                                            "description": "array\nModule: http",
+                                            "description": "array\nModule: http.handlers",
                                             "type": "array",
                                             "items": {
                                                 "required": [
                                                     "handler"
                                                 ],
-                                                "anyOf": [
+                                                "allOf": [
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.request_body"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "static_response"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.static_response"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.reverse_proxy"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "subroute"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.subroute"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.subroute"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "hmac"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.hmac"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.visitor_ip"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "json_parse"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.json_parse"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.headers"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "reverse_proxy"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.reverse_proxy"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.json_parse"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "error"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.error"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.rewrite"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "templates"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.templates"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.vars"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "visitor_ip"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.visitor_ip"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.hmac"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "request_body"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.request_body"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.encode"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "rewrite"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.rewrite"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.templates"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "vars"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.vars"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.authentication"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "authentication"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.authentication"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.exec"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "exec"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.exec"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.file_server"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "headers"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.headers"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.static_response"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "encode"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.encode"
+                                                        }
                                                     },
                                                     {
-                                                        "$ref": "#/definitions/http.handlers.error"
+                                                        "if": {
+                                                            "properties": {
+                                                                "handler": {
+                                                                    "const": "file_server"
+                                                                }
+                                                            }
+                                                        },
+                                                        "then": {
+                                                            "$ref": "#/definitions/http.handlers.file_server"
+                                                        }
                                                     },
                                                     {
                                                         "properties": {
                                                             "handler": {
-                                                                "type": "string"
+                                                                "description": "handler name\nstring\nModule: http.handlers",
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "static_response",
+                                                                    "subroute",
+                                                                    "hmac",
+                                                                    "json_parse",
+                                                                    "reverse_proxy",
+                                                                    "error",
+                                                                    "templates",
+                                                                    "visitor_ip",
+                                                                    "request_body",
+                                                                    "rewrite",
+                                                                    "vars",
+                                                                    "authentication",
+                                                                    "exec",
+                                                                    "headers",
+                                                                    "encode",
+                                                                    "file_server"
+                                                                ]
                                                             }
                                                         }
                                                     }
@@ -733,7 +1201,7 @@
                                             }
                                         },
                                         "match": {
-                                            "description": "array\nModule: http",
+                                            "description": "array\nModule: http.matchers",
                                             "type": "array",
                                             "items": {
                                                 "properties": {
@@ -890,7 +1358,7 @@
                                             "type": "string"
                                         },
                                         "match": {
-                                            "description": "array\nModule: http",
+                                            "description": "array\nModule: tls.handshake_match",
                                             "type": "array",
                                             "items": {
                                                 "properties": {
@@ -972,23 +1440,46 @@
                     }
                 },
                 "hash": {
-                    "description": "array\nModule: http.authentication.providers.http_basic",
+                    "description": "array\nModule: http.authentication.hashes",
                     "type": "array",
                     "items": {
                         "required": [
                             "algorithm"
                         ],
-                        "anyOf": [
+                        "allOf": [
                             {
-                                "$ref": "#/definitions/http.authentication.hashes.bcrypt"
+                                "if": {
+                                    "properties": {
+                                        "algorithm": {
+                                            "const": "bcrypt"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/http.authentication.hashes.bcrypt"
+                                }
                             },
                             {
-                                "$ref": "#/definitions/http.authentication.hashes.scrypt"
+                                "if": {
+                                    "properties": {
+                                        "algorithm": {
+                                            "const": "scrypt"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/http.authentication.hashes.scrypt"
+                                }
                             },
                             {
                                 "properties": {
                                     "algorithm": {
-                                        "type": "string"
+                                        "description": "algorithm name\nstring\nModule: http.authentication.hashes",
+                                        "type": "string",
+                                        "enum": [
+                                            "bcrypt",
+                                            "scrypt"
+                                        ]
                                     }
                                 }
                             }
@@ -1020,7 +1511,7 @@
             "type": "object",
             "properties": {
                 "providers": {
-                    "description": "array\nModule: http.handlers.authentication",
+                    "description": "array\nModule: http.authentication.providers",
                     "type": "array",
                     "items": {
                         "properties": {
@@ -1037,7 +1528,7 @@
             "type": "object",
             "properties": {
                 "encodings": {
-                    "description": "array\nModule: http.handlers.encode",
+                    "description": "array\nModule: http.encoders",
                     "type": "array",
                     "items": {
                         "properties": {
@@ -1342,7 +1833,7 @@
                     "type": "boolean"
                 },
                 "circuit_breaker": {
-                    "description": "object\nModule: http.handlers.reverse_proxy",
+                    "description": "object\nModule: http.reverse_proxy.circuit_breakers",
                     "type": "object"
                 },
                 "flush_interval": {
@@ -1580,7 +2071,7 @@
                     "type": "object",
                     "properties": {
                         "retry_match": {
-                            "description": "array\nModule: http.handlers.reverse_proxy",
+                            "description": "array\nModule: http.matchers",
                             "type": "array",
                             "items": {
                                 "properties": {
@@ -1633,41 +2124,124 @@
                             }
                         },
                         "selection_policy": {
-                            "description": "array\nModule: http.handlers.reverse_proxy",
+                            "description": "array\nModule: http.reverse_proxy.selection_policies",
                             "type": "array",
                             "items": {
                                 "required": [
                                     "policy"
                                 ],
-                                "anyOf": [
+                                "allOf": [
                                     {
-                                        "$ref": "#/definitions/http.reverse_proxy.selection_policies.uri_hash"
+                                        "if": {
+                                            "properties": {
+                                                "policy": {
+                                                    "const": "uri_hash"
+                                                }
+                                            }
+                                        },
+                                        "then": {
+                                            "$ref": "#/definitions/http.reverse_proxy.selection_policies.uri_hash"
+                                        }
                                     },
                                     {
-                                        "$ref": "#/definitions/http.reverse_proxy.selection_policies.first"
+                                        "if": {
+                                            "properties": {
+                                                "policy": {
+                                                    "const": "first"
+                                                }
+                                            }
+                                        },
+                                        "then": {
+                                            "$ref": "#/definitions/http.reverse_proxy.selection_policies.first"
+                                        }
                                     },
                                     {
-                                        "$ref": "#/definitions/http.reverse_proxy.selection_policies.header"
+                                        "if": {
+                                            "properties": {
+                                                "policy": {
+                                                    "const": "header"
+                                                }
+                                            }
+                                        },
+                                        "then": {
+                                            "$ref": "#/definitions/http.reverse_proxy.selection_policies.header"
+                                        }
                                     },
                                     {
-                                        "$ref": "#/definitions/http.reverse_proxy.selection_policies.ip_hash"
+                                        "if": {
+                                            "properties": {
+                                                "policy": {
+                                                    "const": "ip_hash"
+                                                }
+                                            }
+                                        },
+                                        "then": {
+                                            "$ref": "#/definitions/http.reverse_proxy.selection_policies.ip_hash"
+                                        }
                                     },
                                     {
-                                        "$ref": "#/definitions/http.reverse_proxy.selection_policies.least_conn"
+                                        "if": {
+                                            "properties": {
+                                                "policy": {
+                                                    "const": "least_conn"
+                                                }
+                                            }
+                                        },
+                                        "then": {
+                                            "$ref": "#/definitions/http.reverse_proxy.selection_policies.least_conn"
+                                        }
                                     },
                                     {
-                                        "$ref": "#/definitions/http.reverse_proxy.selection_policies.random"
+                                        "if": {
+                                            "properties": {
+                                                "policy": {
+                                                    "const": "random"
+                                                }
+                                            }
+                                        },
+                                        "then": {
+                                            "$ref": "#/definitions/http.reverse_proxy.selection_policies.random"
+                                        }
                                     },
                                     {
-                                        "$ref": "#/definitions/http.reverse_proxy.selection_policies.random_choose"
+                                        "if": {
+                                            "properties": {
+                                                "policy": {
+                                                    "const": "random_choose"
+                                                }
+                                            }
+                                        },
+                                        "then": {
+                                            "$ref": "#/definitions/http.reverse_proxy.selection_policies.random_choose"
+                                        }
                                     },
                                     {
-                                        "$ref": "#/definitions/http.reverse_proxy.selection_policies.round_robin"
+                                        "if": {
+                                            "properties": {
+                                                "policy": {
+                                                    "const": "round_robin"
+                                                }
+                                            }
+                                        },
+                                        "then": {
+                                            "$ref": "#/definitions/http.reverse_proxy.selection_policies.round_robin"
+                                        }
                                     },
                                     {
                                         "properties": {
                                             "policy": {
-                                                "type": "string"
+                                                "description": "policy name\nstring\nModule: http.reverse_proxy.selection_policies",
+                                                "type": "string",
+                                                "enum": [
+                                                    "uri_hash",
+                                                    "first",
+                                                    "header",
+                                                    "ip_hash",
+                                                    "least_conn",
+                                                    "random",
+                                                    "random_choose",
+                                                    "round_robin"
+                                                ]
                                             }
                                         }
                                     }
@@ -1685,23 +2259,46 @@
                     }
                 },
                 "transport": {
-                    "description": "array\nModule: http.handlers.reverse_proxy",
+                    "description": "array\nModule: http.reverse_proxy.transport",
                     "type": "array",
                     "items": {
                         "required": [
                             "protocol"
                         ],
-                        "anyOf": [
+                        "allOf": [
                             {
-                                "$ref": "#/definitions/http.reverse_proxy.transport.fastcgi"
+                                "if": {
+                                    "properties": {
+                                        "protocol": {
+                                            "const": "fastcgi"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/http.reverse_proxy.transport.fastcgi"
+                                }
                             },
                             {
-                                "$ref": "#/definitions/http.reverse_proxy.transport.http"
+                                "if": {
+                                    "properties": {
+                                        "protocol": {
+                                            "const": "http"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/http.reverse_proxy.transport.http"
+                                }
                             },
                             {
                                 "properties": {
                                     "protocol": {
-                                        "type": "string"
+                                        "description": "protocol name\nstring\nModule: http.reverse_proxy.transport",
+                                        "type": "string",
+                                        "enum": [
+                                            "fastcgi",
+                                            "http"
+                                        ]
                                     }
                                 }
                             }
@@ -1821,65 +2418,228 @@
                                         "type": "string"
                                     },
                                     "handle": {
-                                        "description": "array\nModule: http.handlers.subroute",
+                                        "description": "array\nModule: http.handlers",
                                         "type": "array",
                                         "items": {
                                             "required": [
                                                 "handler"
                                             ],
-                                            "anyOf": [
+                                            "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.templates"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "error"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.error"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.authentication"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "templates"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.templates"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.encode"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "visitor_ip"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.visitor_ip"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.file_server"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "vars"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.vars"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.static_response"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "authentication"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.authentication"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.error"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "exec"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.exec"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.exec"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "headers"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.headers"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.reverse_proxy"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "request_body"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.request_body"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.subroute"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "rewrite"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.rewrite"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.visitor_ip"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "encode"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.encode"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.headers"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "file_server"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.file_server"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.request_body"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "hmac"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.hmac"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.rewrite"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "json_parse"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.json_parse"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.vars"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "reverse_proxy"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.reverse_proxy"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.hmac"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "static_response"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.static_response"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/http.handlers.json_parse"
+                                                    "if": {
+                                                        "properties": {
+                                                            "handler": {
+                                                                "const": "subroute"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/http.handlers.subroute"
+                                                    }
                                                 },
                                                 {
                                                     "properties": {
                                                         "handler": {
-                                                            "type": "string"
+                                                            "description": "handler name\nstring\nModule: http.handlers",
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "error",
+                                                                "templates",
+                                                                "visitor_ip",
+                                                                "vars",
+                                                                "authentication",
+                                                                "exec",
+                                                                "headers",
+                                                                "request_body",
+                                                                "rewrite",
+                                                                "encode",
+                                                                "file_server",
+                                                                "hmac",
+                                                                "json_parse",
+                                                                "reverse_proxy",
+                                                                "static_response",
+                                                                "subroute"
+                                                            ]
                                                         }
                                                     }
                                                 }
@@ -1887,7 +2647,7 @@
                                         }
                                     },
                                     "match": {
-                                        "description": "array\nModule: http.handlers.subroute",
+                                        "description": "array\nModule: http.matchers",
                                         "type": "array",
                                         "items": {
                                             "properties": {
@@ -1959,65 +2719,228 @@
                                 "type": "string"
                             },
                             "handle": {
-                                "description": "array\nModule: http.handlers.subroute",
+                                "description": "array\nModule: http.handlers",
                                 "type": "array",
                                 "items": {
                                     "required": [
                                         "handler"
                                     ],
-                                    "anyOf": [
+                                    "allOf": [
                                         {
-                                            "$ref": "#/definitions/http.handlers.json_parse"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "exec"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.exec"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.rewrite"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "headers"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.headers"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.vars"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "request_body"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.request_body"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.hmac"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "rewrite"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.rewrite"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.encode"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "vars"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.vars"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.templates"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "authentication"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.authentication"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.authentication"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "file_server"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.file_server"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.exec"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "encode"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.encode"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.file_server"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "json_parse"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.json_parse"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.static_response"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "reverse_proxy"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.reverse_proxy"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.error"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "static_response"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.static_response"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.request_body"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "subroute"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.subroute"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.reverse_proxy"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "hmac"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.hmac"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.subroute"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "templates"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.templates"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.visitor_ip"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "visitor_ip"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.visitor_ip"
+                                            }
                                         },
                                         {
-                                            "$ref": "#/definitions/http.handlers.headers"
+                                            "if": {
+                                                "properties": {
+                                                    "handler": {
+                                                        "const": "error"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/http.handlers.error"
+                                            }
                                         },
                                         {
                                             "properties": {
                                                 "handler": {
-                                                    "type": "string"
+                                                    "description": "handler name\nstring\nModule: http.handlers",
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "exec",
+                                                        "headers",
+                                                        "request_body",
+                                                        "rewrite",
+                                                        "vars",
+                                                        "authentication",
+                                                        "file_server",
+                                                        "encode",
+                                                        "json_parse",
+                                                        "reverse_proxy",
+                                                        "static_response",
+                                                        "subroute",
+                                                        "hmac",
+                                                        "templates",
+                                                        "visitor_ip",
+                                                        "error"
+                                                    ]
                                                 }
                                             }
                                         }
@@ -2025,7 +2948,7 @@
                                 }
                             },
                             "match": {
-                                "description": "array\nModule: http.handlers.subroute",
+                                "description": "array\nModule: http.matchers",
                                 "type": "array",
                                 "items": {
                                     "properties": {
@@ -2535,20 +3458,33 @@
                                 "type": "string"
                             },
                             "storage": {
-                                "description": "array\nModule: pki",
+                                "description": "array\nModule: caddy.storage",
                                 "type": "array",
                                 "items": {
                                     "required": [
                                         "module"
                                     ],
-                                    "anyOf": [
+                                    "allOf": [
                                         {
-                                            "$ref": "#/definitions/caddy.storage.file_system"
+                                            "if": {
+                                                "properties": {
+                                                    "module": {
+                                                        "const": "file_system"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "$ref": "#/definitions/caddy.storage.file_system"
+                                            }
                                         },
                                         {
                                             "properties": {
                                                 "module": {
-                                                    "type": "string"
+                                                    "description": "module name\nstring\nModule: caddy.storage",
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "file_system"
+                                                    ]
                                                 }
                                             }
                                         }
@@ -2603,23 +3539,46 @@
                                 "type": "object",
                                 "properties": {
                                     "issuer": {
-                                        "description": "array\nModule: tls",
+                                        "description": "array\nModule: tls.issuance",
                                         "type": "array",
                                         "items": {
                                             "required": [
                                                 "module"
                                             ],
-                                            "anyOf": [
+                                            "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/tls.issuance.acme"
+                                                    "if": {
+                                                        "properties": {
+                                                            "module": {
+                                                                "const": "acme"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/tls.issuance.acme"
+                                                    }
                                                 },
                                                 {
-                                                    "$ref": "#/definitions/tls.issuance.internal"
+                                                    "if": {
+                                                        "properties": {
+                                                            "module": {
+                                                                "const": "internal"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/tls.issuance.internal"
+                                                    }
                                                 },
                                                 {
                                                     "properties": {
                                                         "module": {
-                                                            "type": "string"
+                                                            "description": "module name\nstring\nModule: tls.issuance",
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "acme",
+                                                                "internal"
+                                                            ]
                                                         }
                                                     }
                                                 }
@@ -2643,20 +3602,33 @@
                                         "type": "object"
                                     },
                                     "storage": {
-                                        "description": "array\nModule: tls",
+                                        "description": "array\nModule: caddy.storage",
                                         "type": "array",
                                         "items": {
                                             "required": [
                                                 "module"
                                             ],
-                                            "anyOf": [
+                                            "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/caddy.storage.file_system"
+                                                    "if": {
+                                                        "properties": {
+                                                            "module": {
+                                                                "const": "file_system"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "$ref": "#/definitions/caddy.storage.file_system"
+                                                    }
                                                 },
                                                 {
                                                     "properties": {
                                                         "module": {
-                                                            "type": "string"
+                                                            "description": "module name\nstring\nModule: caddy.storage",
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "file_system"
+                                                            ]
                                                         }
                                                     }
                                                 }
@@ -2680,7 +3652,7 @@
                     }
                 },
                 "certificates": {
-                    "description": "array\nModule: tls",
+                    "description": "array\nModule: tls.certificates",
                     "type": "array",
                     "items": {
                         "properties": {
@@ -2712,23 +3684,46 @@
                             "type": "boolean"
                         },
                         "key_source": {
-                            "description": "array\nModule: tls",
+                            "description": "array\nModule: tls.stek",
                             "type": "array",
                             "items": {
                                 "required": [
                                     "provider"
                                 ],
-                                "anyOf": [
+                                "allOf": [
                                     {
-                                        "$ref": "#/definitions/tls.stek.distributed"
+                                        "if": {
+                                            "properties": {
+                                                "provider": {
+                                                    "const": "distributed"
+                                                }
+                                            }
+                                        },
+                                        "then": {
+                                            "$ref": "#/definitions/tls.stek.distributed"
+                                        }
                                     },
                                     {
-                                        "$ref": "#/definitions/tls.stek.standard"
+                                        "if": {
+                                            "properties": {
+                                                "provider": {
+                                                    "const": "standard"
+                                                }
+                                            }
+                                        },
+                                        "then": {
+                                            "$ref": "#/definitions/tls.stek.standard"
+                                        }
                                     },
                                     {
                                         "properties": {
                                             "provider": {
-                                                "type": "string"
+                                                "description": "provider name\nstring\nModule: tls.stek",
+                                                "type": "string",
+                                                "enum": [
+                                                    "distributed",
+                                                    "standard"
+                                                ]
                                             }
                                         }
                                     }
@@ -2845,7 +3840,7 @@
                             "type": "object",
                             "properties": {
                                 "provider": {
-                                    "description": "object\nModule: tls.issuance.acme",
+                                    "description": "object\nModule: dns.providers",
                                     "type": "object"
                                 },
                                 "ttl": {
@@ -2938,20 +3933,33 @@
             "type": "object",
             "properties": {
                 "storage": {
-                    "description": "array\nModule: tls.stek.distributed",
+                    "description": "array\nModule: caddy.storage",
                     "type": "array",
                     "items": {
                         "required": [
                             "module"
                         ],
-                        "anyOf": [
+                        "allOf": [
                             {
-                                "$ref": "#/definitions/caddy.storage.file_system"
+                                "if": {
+                                    "properties": {
+                                        "module": {
+                                            "const": "file_system"
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "$ref": "#/definitions/caddy.storage.file_system"
+                                }
                             },
                             {
                                 "properties": {
                                     "module": {
-                                        "type": "string"
+                                        "description": "module name\nstring\nModule: caddy.storage",
+                                        "type": "string",
+                                        "enum": [
+                                            "file_system"
+                                        ]
                                     }
                                 }
                             }

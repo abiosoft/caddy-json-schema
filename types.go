@@ -24,10 +24,18 @@ type Schema struct {
 	Properties           map[string]*Schema `json:"properties,omitempty"`
 	AdditionalProperties *Schema            `json:"additionalProperties,omitempty"`
 	Required             []string           `json:"required,omitempty"`
+	Enum                 []string           `json:"enum,omitempty"`
 
 	AdditionalItems bool      `json:"additionalItems,omitempty"`
 	AllOf           []*Schema `json:"allOf,omitempty"`
 	AnyOf           []*Schema `json:"anyOf,omitempty"`
+	OneOf           []*Schema `json:"oneOf,omitempty"`
+
+	If   *Schema `json:"if,omitempty"`
+	Then *Schema `json:"then,omitempty"`
+	Else *Schema `json:"else,omitempty"`
+
+	Const string `json:"const,omitempty"`
 }
 
 func getType(typ string) string {

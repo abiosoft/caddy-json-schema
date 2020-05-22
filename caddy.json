@@ -1,1 +1,50 @@
-{}
+{
+    "apps": {
+        "http": {
+            "servers": {
+                "myserver": {
+                    "routes": [
+                        {
+                            "match": [
+                                {
+                                    "path": [
+                                        "/users"
+                                    ]
+                                }
+                            ],
+                            "handle": [
+                                {
+                                    "handler": "subroute",
+                                    "routes": [
+                                        {
+                                            "handle": [
+                                                {
+                                                    "handler": "file_server",
+                                                    "hide": [
+                                                        "Caddyfile"
+                                                    ],
+                                                    "browse": {
+                                                        "template_file": "file.html"
+                                                    }
+                                                },
+                                                {
+                                                    "handler": "json_parse",
+                                                    "strict": "strict"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "another": {
+                    "automatic_https": {
+                        "disable": true
+                    }
+                }
+            }
+        }
+    }
+}
