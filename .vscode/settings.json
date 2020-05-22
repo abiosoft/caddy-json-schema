@@ -1,0 +1,10 @@
+{
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "*caddy.json"
+            ],
+            "url": ".vscode/schema.json"
+        }
+    ]
+}
