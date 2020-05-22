@@ -7,6 +7,7 @@ import (
 	"os"
 	"reflect"
 	"strings"
+	"unicode"
 
 	"github.com/caddyserver/caddy/v2"
 	caddycmd "github.com/caddyserver/caddy/v2/cmd"
@@ -39,7 +40,7 @@ func cmdSchema(fs caddycmd.Flags) (int, error) {
 		return 1, err
 	}
 
-	if err := doStuffs(); err != nil {
+	if err := generateSchema(); err != nil {
 		return 1, err
 	}
 
@@ -47,7 +48,6 @@ func cmdSchema(fs caddycmd.Flags) (int, error) {
 }
 
 func getAllModules() error {
-	flatModuleMap := Modules{}
 	for _, mod := range caddy.Modules() {
 		split := strings.Split(mod, ".")
 
@@ -67,9 +67,10 @@ func getAllModules() error {
 			moduleMap[parent] = Modules{}
 		}
 
+		newInfo := info.New()
 		module := Module{
 			Name: name,
-			Type: info.New(),
+			Type: newInfo,
 			Field: Field{
 				Name:   name,
 				Module: mod,
@@ -104,7 +105,7 @@ func getAllModules() error {
 	return nil
 }
 
-func doStuffs() error {
+func generateSchema() error {
 	f, err := os.OpenFile("schema.json", os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0755)
 	if err != nil {
 		return err
@@ -143,8 +144,24 @@ type Field struct {
 	LoaderKey string // inline_key
 }
 
-func (f Field) description(typ string) string {
-	return fmt.Sprintf("%s\nModule: %s", typ, f.Module)
+func (f Field) description(fieldType string) string {
+	var link string
+
+	typ := reflect.TypeOf(flatModuleMap[f.Module].Type)
+	if typ != nil {
+		if typ.Kind() == reflect.Ptr {
+			typ = typ.Elem()
+		}
+		// only show link for public fields
+		if typ.Name() != "" {
+			c := rune(typ.Name()[0])
+			if unicode.IsUpper(c) && unicode.IsLetter(c) {
+				link = fmt.Sprintf("https://pkg.go.dev/%s#%s\n", typ.PkgPath(), typ.Name())
+			}
+		}
+	}
+	info := fmt.Sprintf("%s\nModule: %s", fieldType, f.Module)
+	return link + info
 }
 
 func (f Field) toSchema() *Schema {

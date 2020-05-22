@@ -11,6 +11,7 @@ type Module struct {
 type Modules map[string]Module
 
 var moduleMap = map[string]Modules{}
+var flatModuleMap = Modules{}
 
 // Schema ...
 type Schema struct {

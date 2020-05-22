@@ -29,7 +29,7 @@
                                                 },
                                                 {
                                                     "handler": "json_parse",
-                                                    "strict": "strict"
+                                                    "strict": false
                                                 }
                                             ]
                                         }
@@ -42,9 +42,33 @@
                 "another": {
                     "automatic_https": {
                         "disable": true
-                    }
+                    },
+                    "listen": [
+                        ":8080"
+                    ],
+                    "routes": [
+                        {
+                            "handle": [
+                                {
+                                    "handler": "json_parse",
+                                    "strict": true
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
+        },
+        "exec": {
+            "commands": [
+                {
+                    "command": "echo",
+                    "args": [
+                        "Hello world"
+                    ],
+                    "foreground": true
+                }
+            ]
         }
     }
 }
