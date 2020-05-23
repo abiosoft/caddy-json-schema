@@ -1,0 +1,985 @@
+{
+    "structure": {
+        "type": "struct",
+        "type_name": "github.com/caddyserver/caddy/v2/modules/caddyhttp.App",
+        "struct_fields": [
+            {
+                "key": "http_port",
+                "value": {
+                    "type": "int",
+                    "doc": "http_port specifies the port to use for HTTP (as opposed to HTTPS),\nwhich is used when setting up HTTP->HTTPS redirects or ACME HTTP\nchallenge solvers. Default: 80."
+                },
+                "doc": "http_port specifies the port to use for HTTP (as opposed to HTTPS),\nwhich is used when setting up HTTP->HTTPS redirects or ACME HTTP\nchallenge solvers. Default: 80."
+            },
+            {
+                "key": "https_port",
+                "value": {
+                    "type": "int",
+                    "doc": "https_port specifies the port to use for HTTPS, which is used when\nsolving the ACME TLS-ALPN challenges, or whenever HTTPS is needed\nbut no specific port number is given. Default: 443."
+                },
+                "doc": "https_port specifies the port to use for HTTPS, which is used when\nsolving the ACME TLS-ALPN challenges, or whenever HTTPS is needed\nbut no specific port number is given. Default: 443."
+            },
+            {
+                "key": "grace_period",
+                "value": {
+                    "type": "int",
+                    "type_name": "github.com/caddyserver/caddy/v2.Duration",
+                    "doc": "grace_period is how long to wait for active connections when shutting\ndown the server. Once the grace period is over, connections will\nbe forcefully closed.\n\nDuration can be an integer or a string. An integer is\ninterpreted as nanoseconds. If a string, it is a Go\ntime.Duration value such as `300ms`, `1.5h`, or `2h45m`;\nvalid units are `ns`, `us`/`µs`, `ms`, `s`, `m`, and `h`."
+                },
+                "doc": "grace_period is how long to wait for active connections when shutting\ndown the server. Once the grace period is over, connections will\nbe forcefully closed.\n\nDuration can be an integer or a string. An integer is\ninterpreted as nanoseconds. If a string, it is a Go\ntime.Duration value such as `300ms`, `1.5h`, or `2h45m`;\nvalid units are `ns`, `us`/`µs`, `ms`, `s`, `m`, and `h`."
+            },
+            {
+                "key": "servers",
+                "value": {
+                    "type": "map",
+                    "map_keys": {
+                        "type": "string"
+                    },
+                    "elems": {
+                        "type": "struct",
+                        "type_name": "github.com/caddyserver/caddy/v2/modules/caddyhttp.Server",
+                        "struct_fields": [
+                            {
+                                "key": "listen",
+                                "value": {
+                                    "type": "array",
+                                    "elems": {
+                                        "type": "string",
+                                        "doc": "Socket addresses to which to bind listeners. Accepts\n[network addresses](/docs/conventions#network-addresses)\nthat may include port ranges. Listener addresses must\nbe unique; they cannot be repeated across all defined\nservers."
+                                    }
+                                },
+                                "doc": "Socket addresses to which to bind listeners. Accepts\n[network addresses](/docs/conventions#network-addresses)\nthat may include port ranges. Listener addresses must\nbe unique; they cannot be repeated across all defined\nservers."
+                            },
+                            {
+                                "key": "listener_wrappers",
+                                "value": {
+                                    "type": "array",
+                                    "elems": {
+                                        "type": "module",
+                                        "doc": "A list of listener wrapper modules, which can modify the behavior\nof the base listener. They are applied in the given order.",
+                                        "module_namespace": "caddy.listeners",
+                                        "module_inline_key": "wrapper"
+                                    }
+                                },
+                                "doc": "A list of listener wrapper modules, which can modify the behavior\nof the base listener. They are applied in the given order."
+                            },
+                            {
+                                "key": "read_timeout",
+                                "value": {
+                                    "type": "int",
+                                    "type_name": "github.com/caddyserver/caddy/v2.Duration",
+                                    "doc": "How long to allow a read from a client's upload. Setting this\nto a short, non-zero value can mitigate slowloris attacks, but\nmay also affect legitimately slow clients.\n\nDuration can be an integer or a string. An integer is\ninterpreted as nanoseconds. If a string, it is a Go\ntime.Duration value such as `300ms`, `1.5h`, or `2h45m`;\nvalid units are `ns`, `us`/`µs`, `ms`, `s`, `m`, and `h`."
+                                },
+                                "doc": "How long to allow a read from a client's upload. Setting this\nto a short, non-zero value can mitigate slowloris attacks, but\nmay also affect legitimately slow clients.\n\nDuration can be an integer or a string. An integer is\ninterpreted as nanoseconds. If a string, it is a Go\ntime.Duration value such as `300ms`, `1.5h`, or `2h45m`;\nvalid units are `ns`, `us`/`µs`, `ms`, `s`, `m`, and `h`."
+                            },
+                            {
+                                "key": "read_header_timeout",
+                                "value": {
+                                    "type": "int",
+                                    "type_name": "github.com/caddyserver/caddy/v2.Duration",
+                                    "doc": "read_header_timeout is like ReadTimeout but for request headers.\n\nDuration can be an integer or a string. An integer is\ninterpreted as nanoseconds. If a string, it is a Go\ntime.Duration value such as `300ms`, `1.5h`, or `2h45m`;\nvalid units are `ns`, `us`/`µs`, `ms`, `s`, `m`, and `h`."
+                                },
+                                "doc": "read_header_timeout is like ReadTimeout but for request headers.\n\nDuration can be an integer or a string. An integer is\ninterpreted as nanoseconds. If a string, it is a Go\ntime.Duration value such as `300ms`, `1.5h`, or `2h45m`;\nvalid units are `ns`, `us`/`µs`, `ms`, `s`, `m`, and `h`."
+                            },
+                            {
+                                "key": "write_timeout",
+                                "value": {
+                                    "type": "int",
+                                    "type_name": "github.com/caddyserver/caddy/v2.Duration",
+                                    "doc": "write_timeout is how long to allow a write to a client. Note\nthat setting this to a small value when serving large files\nmay negatively affect legitimately slow clients.\n\nDuration can be an integer or a string. An integer is\ninterpreted as nanoseconds. If a string, it is a Go\ntime.Duration value such as `300ms`, `1.5h`, or `2h45m`;\nvalid units are `ns`, `us`/`µs`, `ms`, `s`, `m`, and `h`."
+                                },
+                                "doc": "write_timeout is how long to allow a write to a client. Note\nthat setting this to a small value when serving large files\nmay negatively affect legitimately slow clients.\n\nDuration can be an integer or a string. An integer is\ninterpreted as nanoseconds. If a string, it is a Go\ntime.Duration value such as `300ms`, `1.5h`, or `2h45m`;\nvalid units are `ns`, `us`/`µs`, `ms`, `s`, `m`, and `h`."
+                            },
+                            {
+                                "key": "idle_timeout",
+                                "value": {
+                                    "type": "int",
+                                    "type_name": "github.com/caddyserver/caddy/v2.Duration",
+                                    "doc": "idle_timeout is the maximum time to wait for the next request\nwhen keep-alives are enabled. If zero, ReadTimeout is used.\nIf both are zero, there is no timeout.\n\nDuration can be an integer or a string. An integer is\ninterpreted as nanoseconds. If a string, it is a Go\ntime.Duration value such as `300ms`, `1.5h`, or `2h45m`;\nvalid units are `ns`, `us`/`µs`, `ms`, `s`, `m`, and `h`."
+                                },
+                                "doc": "idle_timeout is the maximum time to wait for the next request\nwhen keep-alives are enabled. If zero, ReadTimeout is used.\nIf both are zero, there is no timeout.\n\nDuration can be an integer or a string. An integer is\ninterpreted as nanoseconds. If a string, it is a Go\ntime.Duration value such as `300ms`, `1.5h`, or `2h45m`;\nvalid units are `ns`, `us`/`µs`, `ms`, `s`, `m`, and `h`."
+                            },
+                            {
+                                "key": "max_header_bytes",
+                                "value": {
+                                    "type": "int",
+                                    "doc": "max_header_bytes is the maximum size to parse from a client's\nHTTP request headers."
+                                },
+                                "doc": "max_header_bytes is the maximum size to parse from a client's\nHTTP request headers."
+                            },
+                            {
+                                "key": "routes",
+                                "value": {
+                                    "type": "array",
+                                    "type_name": "github.com/caddyserver/caddy/v2/modules/caddyhttp.RouteList",
+                                    "elems": {
+                                        "type": "struct",
+                                        "type_name": "github.com/caddyserver/caddy/v2/modules/caddyhttp.Route",
+                                        "struct_fields": [
+                                            {
+                                                "key": "group",
+                                                "value": {
+                                                    "type": "string",
+                                                    "doc": "group is an optional name for a group to which this\nroute belongs. Grouping a route makes it mutually\nexclusive with others in its group; if a route belongs\nto a group, only the first matching route in that group\nwill be executed."
+                                                },
+                                                "doc": "group is an optional name for a group to which this\nroute belongs. Grouping a route makes it mutually\nexclusive with others in its group; if a route belongs\nto a group, only the first matching route in that group\nwill be executed."
+                                            },
+                                            {
+                                                "key": "match",
+                                                "value": {
+                                                    "type": "array",
+                                                    "type_name": "github.com/caddyserver/caddy/v2/modules/caddyhttp.RawMatcherSets",
+                                                    "elems": {
+                                                        "type": "module_map",
+                                                        "type_name": "github.com/caddyserver/caddy/v2.ModuleMap",
+                                                        "doc": "The matcher sets which will be used to qualify this\nroute for a request (essentially the \"if\" statement\nof this route). Each matcher set is OR'ed, but matchers\nwithin a set are AND'ed together.\n\nModuleMap is a map that can contain multiple modules,\nwhere the map key is the module's name. (The namespace\nis usually read from an associated field's struct tag.)\nBecause the module's name is given as the key in a\nmodule map, the name does not have to be given in the\njson.RawMessage.",
+                                                        "module_namespace": "http.matchers"
+                                                    },
+                                                    "doc": "RawMatcherSets is a group of matcher sets\nin their raw, JSON form.\n"
+                                                },
+                                                "doc": "The matcher sets which will be used to qualify this\nroute for a request (essentially the \"if\" statement\nof this route). Each matcher set is OR'ed, but matchers\nwithin a set are AND'ed together.\n\nModuleMap is a map that can contain multiple modules,\nwhere the map key is the module's name. (The namespace\nis usually read from an associated field's struct tag.)\nBecause the module's name is given as the key in a\nmodule map, the name does not have to be given in the\njson.RawMessage."
+                                            },
+                                            {
+                                                "key": "handle",
+                                                "value": {
+                                                    "type": "array",
+                                                    "elems": {
+                                                        "type": "module",
+                                                        "doc": "The list of handlers for this route. Upon matching a request, they are chained\ntogether in a middleware fashion: requests flow from the first handler to the last\n(top of the list to the bottom), with the possibility that any handler could stop\nthe chain and/or return an error. Responses flow back through the chain (bottom of\nthe list to the top) as they are written out to the client.\n\nNot all handlers call the next handler in the chain. For example, the reverse_proxy\nhandler always sends a request upstream or returns an error. Thus, configuring\nhandlers after reverse_proxy in the same route is illogical, since they would never\nbe executed. You will want to put handlers which originate the response at the very\nend of your route(s). The documentation for a module should state whether it invokes\nthe next handler, but sometimes it is common sense.\n\nSome handlers manipulate the response. Remember that requests flow down the list, and\nresponses flow up the list.\n\nFor example, if you wanted to use both `templates` and `encode` handlers, you would\nneed to put `templates` after `encode` in your route, because responses flow up.\nThus, `templates` will be able to parse and execute the plain-text response as a\ntemplate, and then return it up to the `encode` handler which will then compress it\ninto a binary format.\n\nIf `templates` came before `encode`, then `encode` would write a compressed,\nbinary-encoded response to `templates` which would not be able to parse the response\nproperly.\n\nThe correct order, then, is this:\n\n    [\n        {\"handler\": \"encode\"},\n        {\"handler\": \"templates\"},\n        {\"handler\": \"file_server\"}\n    ]\n\nThe request flows ⬇️ DOWN (`encode` -> `templates` -> `file_server`).\n\n1. First, `encode` will choose how to `encode` the response and wrap the response.\n2. Then, `templates` will wrap the response with a buffer.\n3. Finally, `file_server` will originate the content from a file.\n\nThe response flows ⬆️ UP (`file_server` -> `templates` -> `encode`):\n\n1. First, `file_server` will write the file to the response.\n2. That write will be buffered and then executed by `templates`.\n3. Lastly, the write from `templates` will flow into `encode` which will compress the stream.\n\nIf you think of routes in this way, it will be easy and even fun to solve the puzzle of writing correct routes.",
+                                                        "module_namespace": "http.handlers",
+                                                        "module_inline_key": "handler"
+                                                    }
+                                                },
+                                                "doc": "The list of handlers for this route. Upon matching a request, they are chained\ntogether in a middleware fashion: requests flow from the first handler to the last\n(top of the list to the bottom), with the possibility that any handler could stop\nthe chain and/or return an error. Responses flow back through the chain (bottom of\nthe list to the top) as they are written out to the client.\n\nNot all handlers call the next handler in the chain. For example, the reverse_proxy\nhandler always sends a request upstream or returns an error. Thus, configuring\nhandlers after reverse_proxy in the same route is illogical, since they would never\nbe executed. You will want to put handlers which originate the response at the very\nend of your route(s). The documentation for a module should state whether it invokes\nthe next handler, but sometimes it is common sense.\n\nSome handlers manipulate the response. Remember that requests flow down the list, and\nresponses flow up the list.\n\nFor example, if you wanted to use both `templates` and `encode` handlers, you would\nneed to put `templates` after `encode` in your route, because responses flow up.\nThus, `templates` will be able to parse and execute the plain-text response as a\ntemplate, and then return it up to the `encode` handler which will then compress it\ninto a binary format.\n\nIf `templates` came before `encode`, then `encode` would write a compressed,\nbinary-encoded response to `templates` which would not be able to parse the response\nproperly.\n\nThe correct order, then, is this:\n\n    [\n        {\"handler\": \"encode\"},\n        {\"handler\": \"templates\"},\n        {\"handler\": \"file_server\"}\n    ]\n\nThe request flows ⬇️ DOWN (`encode` -> `templates` -> `file_server`).\n\n1. First, `encode` will choose how to `encode` the response and wrap the response.\n2. Then, `templates` will wrap the response with a buffer.\n3. Finally, `file_server` will originate the content from a file.\n\nThe response flows ⬆️ UP (`file_server` -> `templates` -> `encode`):\n\n1. First, `file_server` will write the file to the response.\n2. That write will be buffered and then executed by `templates`.\n3. Lastly, the write from `templates` will flow into `encode` which will compress the stream.\n\nIf you think of routes in this way, it will be easy and even fun to solve the puzzle of writing correct routes."
+                                            },
+                                            {
+                                                "key": "terminal",
+                                                "value": {
+                                                    "type": "bool",
+                                                    "doc": "If true, no more routes will be executed after this one."
+                                                },
+                                                "doc": "If true, no more routes will be executed after this one."
+                                            }
+                                        ],
+                                        "doc": "routes describes how this server will handle requests.\nRoutes are executed sequentially. First a route's matchers\nare evaluated, then its grouping. If it matches and has\nnot been mutually-excluded by its grouping, then its\nhandlers are executed sequentially. The sequence of invoked\nhandlers comprises a compiled middleware chain that flows\nfrom each matching route and its handlers to the next.\n\nRoute consists of a set of rules for matching HTTP requests,\na list of handlers to execute, and optional flow control\nparameters which customize the handling of HTTP requests\nin a highly flexible and performant manner."
+                                    },
+                                    "doc": "RouteList is a list of server routes that can\ncreate a middleware chain.\n"
+                                },
+                                "doc": "routes describes how this server will handle requests.\nRoutes are executed sequentially. First a route's matchers\nare evaluated, then its grouping. If it matches and has\nnot been mutually-excluded by its grouping, then its\nhandlers are executed sequentially. The sequence of invoked\nhandlers comprises a compiled middleware chain that flows\nfrom each matching route and its handlers to the next.\n\nRoute consists of a set of rules for matching HTTP requests,\na list of handlers to execute, and optional flow control\nparameters which customize the handling of HTTP requests\nin a highly flexible and performant manner."
+                            },
+                            {
+                                "key": "errors",
+                                "value": {
+                                    "type": "struct",
+                                    "type_name": "github.com/caddyserver/caddy/v2/modules/caddyhttp.HTTPErrorConfig",
+                                    "struct_fields": [
+                                        {
+                                            "key": "routes",
+                                            "value": {
+                                                "type": "array",
+                                                "type_name": "github.com/caddyserver/caddy/v2/modules/caddyhttp.RouteList",
+                                                "elems": {
+                                                    "type": "struct",
+                                                    "type_name": "github.com/caddyserver/caddy/v2/modules/caddyhttp.Route",
+                                                    "struct_fields": [
+                                                        {
+                                                            "key": "group",
+                                                            "value": {
+                                                                "type": "string",
+                                                                "doc": "group is an optional name for a group to which this\nroute belongs. Grouping a route makes it mutually\nexclusive with others in its group; if a route belongs\nto a group, only the first matching route in that group\nwill be executed."
+                                                            },
+                                                            "doc": "group is an optional name for a group to which this\nroute belongs. Grouping a route makes it mutually\nexclusive with others in its group; if a route belongs\nto a group, only the first matching route in that group\nwill be executed."
+                                                        },
+                                                        {
+                                                            "key": "match",
+                                                            "value": {
+                                                                "type": "array",
+                                                                "type_name": "github.com/caddyserver/caddy/v2/modules/caddyhttp.RawMatcherSets",
+                                                                "elems": {
+                                                                    "type": "module_map",
+                                                                    "type_name": "github.com/caddyserver/caddy/v2.ModuleMap",
+                                                                    "doc": "The matcher sets which will be used to qualify this\nroute for a request (essentially the \"if\" statement\nof this route). Each matcher set is OR'ed, but matchers\nwithin a set are AND'ed together.\n\nModuleMap is a map that can contain multiple modules,\nwhere the map key is the module's name. (The namespace\nis usually read from an associated field's struct tag.)\nBecause the module's name is given as the key in a\nmodule map, the name does not have to be given in the\njson.RawMessage.",
+                                                                    "module_namespace": "http.matchers"
+                                                                },
+                                                                "doc": "RawMatcherSets is a group of matcher sets\nin their raw, JSON form.\n"
+                                                            },
+                                                            "doc": "The matcher sets which will be used to qualify this\nroute for a request (essentially the \"if\" statement\nof this route). Each matcher set is OR'ed, but matchers\nwithin a set are AND'ed together.\n\nModuleMap is a map that can contain multiple modules,\nwhere the map key is the module's name. (The namespace\nis usually read from an associated field's struct tag.)\nBecause the module's name is given as the key in a\nmodule map, the name does not have to be given in the\njson.RawMessage."
+                                                        },
+                                                        {
+                                                            "key": "handle",
+                                                            "value": {
+                                                                "type": "array",
+                                                                "elems": {
+                                                                    "type": "module",
+                                                                    "doc": "The list of handlers for this route. Upon matching a request, they are chained\ntogether in a middleware fashion: requests flow from the first handler to the last\n(top of the list to the bottom), with the possibility that any handler could stop\nthe chain and/or return an error. Responses flow back through the chain (bottom of\nthe list to the top) as they are written out to the client.\n\nNot all handlers call the next handler in the chain. For example, the reverse_proxy\nhandler always sends a request upstream or returns an error. Thus, configuring\nhandlers after reverse_proxy in the same route is illogical, since they would never\nbe executed. You will want to put handlers which originate the response at the very\nend of your route(s). The documentation for a module should state whether it invokes\nthe next handler, but sometimes it is common sense.\n\nSome handlers manipulate the response. Remember that requests flow down the list, and\nresponses flow up the list.\n\nFor example, if you wanted to use both `templates` and `encode` handlers, you would\nneed to put `templates` after `encode` in your route, because responses flow up.\nThus, `templates` will be able to parse and execute the plain-text response as a\ntemplate, and then return it up to the `encode` handler which will then compress it\ninto a binary format.\n\nIf `templates` came before `encode`, then `encode` would write a compressed,\nbinary-encoded response to `templates` which would not be able to parse the response\nproperly.\n\nThe correct order, then, is this:\n\n    [\n        {\"handler\": \"encode\"},\n        {\"handler\": \"templates\"},\n        {\"handler\": \"file_server\"}\n    ]\n\nThe request flows ⬇️ DOWN (`encode` -> `templates` -> `file_server`).\n\n1. First, `encode` will choose how to `encode` the response and wrap the response.\n2. Then, `templates` will wrap the response with a buffer.\n3. Finally, `file_server` will originate the content from a file.\n\nThe response flows ⬆️ UP (`file_server` -> `templates` -> `encode`):\n\n1. First, `file_server` will write the file to the response.\n2. That write will be buffered and then executed by `templates`.\n3. Lastly, the write from `templates` will flow into `encode` which will compress the stream.\n\nIf you think of routes in this way, it will be easy and even fun to solve the puzzle of writing correct routes.",
+                                                                    "module_namespace": "http.handlers",
+                                                                    "module_inline_key": "handler"
+                                                                }
+                                                            },
+                                                            "doc": "The list of handlers for this route. Upon matching a request, they are chained\ntogether in a middleware fashion: requests flow from the first handler to the last\n(top of the list to the bottom), with the possibility that any handler could stop\nthe chain and/or return an error. Responses flow back through the chain (bottom of\nthe list to the top) as they are written out to the client.\n\nNot all handlers call the next handler in the chain. For example, the reverse_proxy\nhandler always sends a request upstream or returns an error. Thus, configuring\nhandlers after reverse_proxy in the same route is illogical, since they would never\nbe executed. You will want to put handlers which originate the response at the very\nend of your route(s). The documentation for a module should state whether it invokes\nthe next handler, but sometimes it is common sense.\n\nSome handlers manipulate the response. Remember that requests flow down the list, and\nresponses flow up the list.\n\nFor example, if you wanted to use both `templates` and `encode` handlers, you would\nneed to put `templates` after `encode` in your route, because responses flow up.\nThus, `templates` will be able to parse and execute the plain-text response as a\ntemplate, and then return it up to the `encode` handler which will then compress it\ninto a binary format.\n\nIf `templates` came before `encode`, then `encode` would write a compressed,\nbinary-encoded response to `templates` which would not be able to parse the response\nproperly.\n\nThe correct order, then, is this:\n\n    [\n        {\"handler\": \"encode\"},\n        {\"handler\": \"templates\"},\n        {\"handler\": \"file_server\"}\n    ]\n\nThe request flows ⬇️ DOWN (`encode` -> `templates` -> `file_server`).\n\n1. First, `encode` will choose how to `encode` the response and wrap the response.\n2. Then, `templates` will wrap the response with a buffer.\n3. Finally, `file_server` will originate the content from a file.\n\nThe response flows ⬆️ UP (`file_server` -> `templates` -> `encode`):\n\n1. First, `file_server` will write the file to the response.\n2. That write will be buffered and then executed by `templates`.\n3. Lastly, the write from `templates` will flow into `encode` which will compress the stream.\n\nIf you think of routes in this way, it will be easy and even fun to solve the puzzle of writing correct routes."
+                                                        },
+                                                        {
+                                                            "key": "terminal",
+                                                            "value": {
+                                                                "type": "bool",
+                                                                "doc": "If true, no more routes will be executed after this one."
+                                                            },
+                                                            "doc": "If true, no more routes will be executed after this one."
+                                                        }
+                                                    ],
+                                                    "doc": "The routes to evaluate after the primary handler\nchain returns an error. In an error route, extra\nplaceholders are available:\n\nPlaceholder | Description\n------------|---------------\n`{http.error.status_code}` | The recommended HTTP status code\n`{http.error.status_text}` | The status text associated with the recommended status code\n`{http.error.message}`     | The error message\n`{http.error.trace}`       | The origin of the error\n`{http.error.id}`          | An identifier for this occurrence of the error\n\nRoute consists of a set of rules for matching HTTP requests,\na list of handlers to execute, and optional flow control\nparameters which customize the handling of HTTP requests\nin a highly flexible and performant manner."
+                                                },
+                                                "doc": "RouteList is a list of server routes that can\ncreate a middleware chain.\n"
+                                            },
+                                            "doc": "The routes to evaluate after the primary handler\nchain returns an error. In an error route, extra\nplaceholders are available:\n\nPlaceholder | Description\n------------|---------------\n`{http.error.status_code}` | The recommended HTTP status code\n`{http.error.status_text}` | The status text associated with the recommended status code\n`{http.error.message}`     | The error message\n`{http.error.trace}`       | The origin of the error\n`{http.error.id}`          | An identifier for this occurrence of the error\n\nRoute consists of a set of rules for matching HTTP requests,\na list of handlers to execute, and optional flow control\nparameters which customize the handling of HTTP requests\nin a highly flexible and performant manner."
+                                        }
+                                    ],
+                                    "doc": "errors is how this server will handle errors returned from any\nof the handlers in the primary routes. If the primary handler\nchain returns an error, the error along with its recommended\nstatus code are bubbled back up to the HTTP server which\nexecutes a separate error route, specified using this property.\nThe error routes work exactly like the normal routes.\n\nHTTPErrorConfig determines how to handle errors\nfrom the HTTP handlers."
+                                },
+                                "doc": "errors is how this server will handle errors returned from any\nof the handlers in the primary routes. If the primary handler\nchain returns an error, the error along with its recommended\nstatus code are bubbled back up to the HTTP server which\nexecutes a separate error route, specified using this property.\nThe error routes work exactly like the normal routes.\n\nHTTPErrorConfig determines how to handle errors\nfrom the HTTP handlers."
+                            },
+                            {
+                                "key": "tls_connection_policies",
+                                "value": {
+                                    "type": "array",
+                                    "type_name": "github.com/caddyserver/caddy/v2/modules/caddytls.ConnectionPolicies",
+                                    "elems": {
+                                        "type": "struct",
+                                        "type_name": "github.com/caddyserver/caddy/v2/modules/caddytls.ConnectionPolicy",
+                                        "struct_fields": [
+                                            {
+                                                "key": "match",
+                                                "value": {
+                                                    "type": "module_map",
+                                                    "type_name": "github.com/caddyserver/caddy/v2.ModuleMap",
+                                                    "doc": "How to match this policy with a TLS ClientHello. If\nthis policy is the first to match, it will be used.\n\nModuleMap is a map that can contain multiple modules,\nwhere the map key is the module's name. (The namespace\nis usually read from an associated field's struct tag.)\nBecause the module's name is given as the key in a\nmodule map, the name does not have to be given in the\njson.RawMessage.",
+                                                    "module_namespace": "tls.handshake_match"
+                                                },
+                                                "doc": "How to match this policy with a TLS ClientHello. If\nthis policy is the first to match, it will be used.\n\nModuleMap is a map that can contain multiple modules,\nwhere the map key is the module's name. (The namespace\nis usually read from an associated field's struct tag.)\nBecause the module's name is given as the key in a\nmodule map, the name does not have to be given in the\njson.RawMessage."
+                                            },
+                                            {
+                                                "key": "certificate_selection",
+                                                "value": {
+                                                    "type": "struct",
+                                                    "type_name": "github.com/caddyserver/caddy/v2/modules/caddytls.CustomCertSelectionPolicy",
+                                                    "struct_fields": [
+                                                        {
+                                                            "key": "serial_number",
+                                                            "value": {
+                                                                "type": "array",
+                                                                "elems": {
+                                                                    "type": "struct",
+                                                                    "type_name": "github.com/caddyserver/caddy/v2/modules/caddytls.bigInt",
+                                                                    "doc": "The certificate must have one of these serial numbers.\n\nbigInt is a big.Int type that interops with JSON encodings as a string."
+                                                                }
+                                                            },
+                                                            "doc": "The certificate must have one of these serial numbers.\n\nbigInt is a big.Int type that interops with JSON encodings as a string."
+                                                        },
+                                                        {
+                                                            "key": "subject_organization",
+                                                            "value": {
+                                                                "type": "array",
+                                                                "elems": {
+                                                                    "type": "string",
+                                                                    "doc": "The certificate must have one of these organization names."
+                                                                }
+                                                            },
+                                                            "doc": "The certificate must have one of these organization names."
+                                                        },
+                                                        {
+                                                            "key": "public_key_algorithm",
+                                                            "value": {
+                                                                "type": "int",
+                                                                "type_name": "github.com/caddyserver/caddy/v2/modules/caddytls.PublicKeyAlgorithm",
+                                                                "doc": "The certificate must use this public key algorithm.\n\nPublicKeyAlgorithm is a JSON-unmarshalable wrapper type."
+                                                            },
+                                                            "doc": "The certificate must use this public key algorithm.\n\nPublicKeyAlgorithm is a JSON-unmarshalable wrapper type."
+                                                        },
+                                                        {
+                                                            "key": "any_tag",
+                                                            "value": {
+                                                                "type": "array",
+                                                                "elems": {
+                                                                    "type": "string",
+                                                                    "doc": "The certificate must have at least one of the tags in the list."
+                                                                }
+                                                            },
+                                                            "doc": "The certificate must have at least one of the tags in the list."
+                                                        },
+                                                        {
+                                                            "key": "all_tags",
+                                                            "value": {
+                                                                "type": "array",
+                                                                "elems": {
+                                                                    "type": "string",
+                                                                    "doc": "The certificate must have all of the tags in the list."
+                                                                }
+                                                            },
+                                                            "doc": "The certificate must have all of the tags in the list."
+                                                        }
+                                                    ],
+                                                    "doc": "How to choose a certificate if more than one matched\nthe given ServerName (SNI) value.\n\nCustomCertSelectionPolicy represents a policy for selecting the certificate\nused to complete a handshake when there may be multiple options. All fields\nspecified must match the candidate certificate for it to be chosen.\nThis was needed to solve https://github.com/caddyserver/caddy/issues/2588."
+                                                },
+                                                "doc": "How to choose a certificate if more than one matched\nthe given ServerName (SNI) value.\n\nCustomCertSelectionPolicy represents a policy for selecting the certificate\nused to complete a handshake when there may be multiple options. All fields\nspecified must match the candidate certificate for it to be chosen.\nThis was needed to solve https://github.com/caddyserver/caddy/issues/2588."
+                                            },
+                                            {
+                                                "key": "cipher_suites",
+                                                "value": {
+                                                    "type": "array",
+                                                    "elems": {
+                                                        "type": "string",
+                                                        "doc": "The list of cipher suites to support. Caddy's\ndefaults are modern and secure."
+                                                    }
+                                                },
+                                                "doc": "The list of cipher suites to support. Caddy's\ndefaults are modern and secure."
+                                            },
+                                            {
+                                                "key": "curves",
+                                                "value": {
+                                                    "type": "array",
+                                                    "elems": {
+                                                        "type": "string",
+                                                        "doc": "The list of elliptic curves to support. Caddy's\ndefaults are modern and secure."
+                                                    }
+                                                },
+                                                "doc": "The list of elliptic curves to support. Caddy's\ndefaults are modern and secure."
+                                            },
+                                            {
+                                                "key": "alpn",
+                                                "value": {
+                                                    "type": "array",
+                                                    "elems": {
+                                                        "type": "string",
+                                                        "doc": "Protocols to use for Application-Layer Protocol\nNegotiation (ALPN) during the handshake."
+                                                    }
+                                                },
+                                                "doc": "Protocols to use for Application-Layer Protocol\nNegotiation (ALPN) during the handshake."
+                                            },
+                                            {
+                                                "key": "protocol_min",
+                                                "value": {
+                                                    "type": "string",
+                                                    "doc": "Minimum TLS protocol version to allow. Default: `tls1.2`"
+                                                },
+                                                "doc": "Minimum TLS protocol version to allow. Default: `tls1.2`"
+                                            },
+                                            {
+                                                "key": "protocol_max",
+                                                "value": {
+                                                    "type": "string",
+                                                    "doc": "Maximum TLS protocol version to allow. Default: `tls1.3`"
+                                                },
+                                                "doc": "Maximum TLS protocol version to allow. Default: `tls1.3`"
+                                            },
+                                            {
+                                                "key": "client_authentication",
+                                                "value": {
+                                                    "type": "struct",
+                                                    "type_name": "github.com/caddyserver/caddy/v2/modules/caddytls.ClientAuthentication",
+                                                    "struct_fields": [
+                                                        {
+                                                            "key": "trusted_ca_certs",
+                                                            "value": {
+                                                                "type": "array",
+                                                                "elems": {
+                                                                    "type": "string",
+                                                                    "doc": "A list of base64 DER-encoded CA certificates\nagainst which to validate client certificates.\nClient certs which are not signed by any of\nthese CAs will be rejected."
+                                                                }
+                                                            },
+                                                            "doc": "A list of base64 DER-encoded CA certificates\nagainst which to validate client certificates.\nClient certs which are not signed by any of\nthese CAs will be rejected."
+                                                        },
+                                                        {
+                                                            "key": "trusted_leaf_certs",
+                                                            "value": {
+                                                                "type": "array",
+                                                                "elems": {
+                                                                    "type": "string",
+                                                                    "doc": "A list of base64 DER-encoded client leaf certs\nto accept. If this list is not empty, client certs\nwhich are not in this list will be rejected."
+                                                                }
+                                                            },
+                                                            "doc": "A list of base64 DER-encoded client leaf certs\nto accept. If this list is not empty, client certs\nwhich are not in this list will be rejected."
+                                                        },
+                                                        {
+                                                            "key": "mode",
+                                                            "value": {
+                                                                "type": "string",
+                                                                "doc": "The mode for authenticating the client. Allowed values are:\n\nMode | Description\n-----|---------------\n`request` | Ask clients for a certificate, but allow even if there isn't one; do not verify it\n`require` | Require clients to present a certificate, but do not verify it\n`verify_if_given` | Ask clients for a certificate; allow even if there isn't one, but verify it if there is\n`require_and_verify` | Require clients to present a valid certificate that is verified\n\nThe default mode is `require_and_verify` if any\nTrustedCACerts or TrustedLeafCerts are provided;\notherwise, the default mode is `require`."
+                                                            },
+                                                            "doc": "The mode for authenticating the client. Allowed values are:\n\nMode | Description\n-----|---------------\n`request` | Ask clients for a certificate, but allow even if there isn't one; do not verify it\n`require` | Require clients to present a certificate, but do not verify it\n`verify_if_given` | Ask clients for a certificate; allow even if there isn't one, but verify it if there is\n`require_and_verify` | Require clients to present a valid certificate that is verified\n\nThe default mode is `require_and_verify` if any\nTrustedCACerts or TrustedLeafCerts are provided;\notherwise, the default mode is `require`."
+                                                        }
+                                                    ],
+                                                    "doc": "Enables and configures TLS client authentication.\n\nClientAuthentication configures TLS client auth."
+                                                },
+                                                "doc": "Enables and configures TLS client authentication.\n\nClientAuthentication configures TLS client auth."
+                                            },
+                                            {
+                                                "key": "default_sni",
+                                                "value": {
+                                                    "type": "string",
+                                                    "doc": "default_sni becomes the ServerName in a ClientHello if there\nis no policy configured for the empty SNI value."
+                                                },
+                                                "doc": "default_sni becomes the ServerName in a ClientHello if there\nis no policy configured for the empty SNI value."
+                                            }
+                                        ],
+                                        "doc": "How to handle TLS connections. At least one policy is\nrequired to enable HTTPS on this server if automatic\nHTTPS is disabled or does not apply.\n\nConnectionPolicy specifies the logic for handling a TLS handshake.\nAn empty policy is valid; safe and sensible defaults will be used."
+                                    },
+                                    "doc": "ConnectionPolicies is an ordered group of connection policies;\nthe first matching policy will be used to configure TLS\nconnections at handshake-time.\n"
+                                },
+                                "doc": "How to handle TLS connections. At least one policy is\nrequired to enable HTTPS on this server if automatic\nHTTPS is disabled or does not apply.\n\nConnectionPolicy specifies the logic for handling a TLS handshake.\nAn empty policy is valid; safe and sensible defaults will be used."
+                            },
+                            {
+                                "key": "automatic_https",
+                                "value": {
+                                    "type": "struct",
+                                    "type_name": "github.com/caddyserver/caddy/v2/modules/caddyhttp.AutoHTTPSConfig",
+                                    "struct_fields": [
+                                        {
+                                            "key": "disable",
+                                            "value": {
+                                                "type": "bool",
+                                                "doc": "If true, automatic HTTPS will be entirely disabled."
+                                            },
+                                            "doc": "If true, automatic HTTPS will be entirely disabled."
+                                        },
+                                        {
+                                            "key": "disable_redirects",
+                                            "value": {
+                                                "type": "bool",
+                                                "doc": "If true, only automatic HTTP->HTTPS redirects will\nbe disabled."
+                                            },
+                                            "doc": "If true, only automatic HTTP->HTTPS redirects will\nbe disabled."
+                                        },
+                                        {
+                                            "key": "skip",
+                                            "value": {
+                                                "type": "array",
+                                                "elems": {
+                                                    "type": "string",
+                                                    "doc": "Hosts/domain names listed here will not be included\nin automatic HTTPS (they will not have certificates\nloaded nor redirects applied)."
+                                                }
+                                            },
+                                            "doc": "Hosts/domain names listed here will not be included\nin automatic HTTPS (they will not have certificates\nloaded nor redirects applied)."
+                                        },
+                                        {
+                                            "key": "skip_certificates",
+                                            "value": {
+                                                "type": "array",
+                                                "elems": {
+                                                    "type": "string",
+                                                    "doc": "Hosts/domain names listed here will still be enabled\nfor automatic HTTPS (unless in the Skip list), except\nthat certificates will not be provisioned and managed\nfor these names."
+                                                }
+                                            },
+                                            "doc": "Hosts/domain names listed here will still be enabled\nfor automatic HTTPS (unless in the Skip list), except\nthat certificates will not be provisioned and managed\nfor these names."
+                                        },
+                                        {
+                                            "key": "ignore_loaded_certificates",
+                                            "value": {
+                                                "type": "bool",
+                                                "doc": "By default, automatic HTTPS will obtain and renew\ncertificates for qualifying hostnames. However, if\na certificate with a matching SAN is already loaded\ninto the cache, certificate management will not be\nenabled. To force automated certificate management\nregardless of loaded certificates, set this to true."
+                                            },
+                                            "doc": "By default, automatic HTTPS will obtain and renew\ncertificates for qualifying hostnames. However, if\na certificate with a matching SAN is already loaded\ninto the cache, certificate management will not be\nenabled. To force automated certificate management\nregardless of loaded certificates, set this to true."
+                                        }
+                                    ],
+                                    "doc": "automatic_https configures or disables automatic HTTPS within this server.\nHTTPS is enabled automatically and by default when qualifying names\nare present in a Host matcher and/or when the server is listening\nonly on the HTTPS port.\n\nAutoHTTPSConfig is used to disable automatic HTTPS\nor certain aspects of it for a specific server.\nHTTPS is enabled automatically and by default when\nqualifying hostnames are available from the config."
+                                },
+                                "doc": "automatic_https configures or disables automatic HTTPS within this server.\nHTTPS is enabled automatically and by default when qualifying names\nare present in a Host matcher and/or when the server is listening\nonly on the HTTPS port.\n\nAutoHTTPSConfig is used to disable automatic HTTPS\nor certain aspects of it for a specific server.\nHTTPS is enabled automatically and by default when\nqualifying hostnames are available from the config."
+                            },
+                            {
+                                "key": "strict_sni_host",
+                                "value": {
+                                    "type": "bool",
+                                    "doc": "If true, will require that a request's Host header match\nthe value of the ServerName sent by the client's TLS\nClientHello; often a necessary safeguard when using TLS\nclient authentication."
+                                },
+                                "doc": "If true, will require that a request's Host header match\nthe value of the ServerName sent by the client's TLS\nClientHello; often a necessary safeguard when using TLS\nclient authentication."
+                            },
+                            {
+                                "key": "logs",
+                                "value": {
+                                    "type": "struct",
+                                    "type_name": "github.com/caddyserver/caddy/v2/modules/caddyhttp.ServerLogConfig",
+                                    "struct_fields": [
+                                        {
+                                            "key": "default_logger_name",
+                                            "value": {
+                                                "type": "string",
+                                                "doc": "The default logger name for all logs emitted by this server for\nhostnames that are not in the LoggerNames (logger_names) map."
+                                            },
+                                            "doc": "The default logger name for all logs emitted by this server for\nhostnames that are not in the LoggerNames (logger_names) map."
+                                        },
+                                        {
+                                            "key": "logger_names",
+                                            "value": {
+                                                "type": "map",
+                                                "map_keys": {
+                                                    "type": "string"
+                                                },
+                                                "elems": {
+                                                    "type": "string",
+                                                    "doc": "logger_names maps request hostnames to a custom logger name.\nFor example, a mapping of \"example.com\" to \"example\" would\ncause access logs from requests with a Host of example.com\nto be emitted by a logger named \"http.log.access.example\"."
+                                                }
+                                            },
+                                            "doc": "logger_names maps request hostnames to a custom logger name.\nFor example, a mapping of \"example.com\" to \"example\" would\ncause access logs from requests with a Host of example.com\nto be emitted by a logger named \"http.log.access.example\"."
+                                        },
+                                        {
+                                            "key": "skip_hosts",
+                                            "value": {
+                                                "type": "array",
+                                                "elems": {
+                                                    "type": "string",
+                                                    "doc": "By default, all requests to this server will be logged if\naccess logging is enabled. This field lists the request\nhosts for which access logging should be disabled."
+                                                }
+                                            },
+                                            "doc": "By default, all requests to this server will be logged if\naccess logging is enabled. This field lists the request\nhosts for which access logging should be disabled."
+                                        },
+                                        {
+                                            "key": "skip_unmapped_hosts",
+                                            "value": {
+                                                "type": "bool",
+                                                "doc": "If true, requests to any host not appearing in the\nLoggerNames (logger_names) map will not be logged."
+                                            },
+                                            "doc": "If true, requests to any host not appearing in the\nLoggerNames (logger_names) map will not be logged."
+                                        }
+                                    ],
+                                    "doc": "Enables access logging and configures how access logs are handled\nin this server. To minimally enable access logs, simply set this\nto a non-null, empty struct.\n\nServerLogConfig describes a server's logging configuration. If\nenabled without customization, all requests to this server are\nlogged to the default logger; logger destinations may be\ncustomized per-request-host."
+                                },
+                                "doc": "Enables access logging and configures how access logs are handled\nin this server. To minimally enable access logs, simply set this\nto a non-null, empty struct.\n\nServerLogConfig describes a server's logging configuration. If\nenabled without customization, all requests to this server are\nlogged to the default logger; logger destinations may be\ncustomized per-request-host."
+                            },
+                            {
+                                "key": "experimental_http3",
+                                "value": {
+                                    "type": "bool",
+                                    "doc": "Enable experimental HTTP/3 support. Note that HTTP/3 is not a\nfinished standard and has extremely limited client support.\nThis field is not subject to compatibility promises."
+                                },
+                                "doc": "Enable experimental HTTP/3 support. Note that HTTP/3 is not a\nfinished standard and has extremely limited client support.\nThis field is not subject to compatibility promises."
+                            }
+                        ],
+                        "doc": "servers is the list of servers, keyed by arbitrary names chosen\nat your discretion for your own convenience; the keys do not\naffect functionality.\n\nServer describes an HTTP server."
+                    }
+                },
+                "doc": "servers is the list of servers, keyed by arbitrary names chosen\nat your discretion for your own convenience; the keys do not\naffect functionality.\n\nServer describes an HTTP server."
+            }
+        ],
+        "doc": "App is a robust, production-ready HTTP server.\n\nHTTPS is enabled by default if host matchers with qualifying names are used\nin any of routes; certificates are automatically provisioned and renewed.\nAdditionally, automatic HTTPS will also enable HTTPS for servers that listen\nonly on the HTTPS port but which do not have any TLS connection policies\ndefined by adding a good, default TLS connection policy.\n\nIn HTTP routes, additional placeholders are available (replace any `*`):\n\nPlaceholder | Description\n------------|---------------\n`{http.request.cookie.*}` | HTTP request cookie\n`{http.request.header.*}` | Specific request header field\n`{http.request.host.labels.*}` | Request host labels (0-based from right); e.g. for foo.example.com: 0=com, 1=example, 2=foo\n`{http.request.host}` | The host part of the request's Host header\n`{http.request.hostport}` | The host and port from the request's Host header\n`{http.request.method}` | The request method\n`{http.request.orig_method}` | The request's original method\n`{http.request.orig_uri.path.dir}` | The request's original directory\n`{http.request.orig_uri.path.file}` | The request's original filename\n`{http.request.orig_uri.path}` | The request's original path\n`{http.request.orig_uri.query}` | The request's original query string (without `?`)\n`{http.request.orig_uri}` | The request's original URI\n`{http.request.port}` | The port part of the request's Host header\n`{http.request.proto}` | The protocol of the request\n`{http.request.remote.host}` | The host part of the remote client's address\n`{http.request.remote.port}` | The port part of the remote client's address\n`{http.request.remote}` | The address of the remote client\n`{http.request.scheme}` | The request scheme\n`{http.request.tls.version}` | The TLS version name\n`{http.request.tls.cipher_suite}` | The TLS cipher suite\n`{http.request.tls.resumed}` | The TLS connection resumed a previous connection\n`{http.request.tls.proto}` | The negotiated next protocol\n`{http.request.tls.proto_mutual}` | The negotiated next protocol was advertised by the server\n`{http.request.tls.server_name}` | The server name requested by the client, if any\n`{http.request.tls.client.fingerprint}` | The SHA256 checksum of the client certificate\n`{http.request.tls.client.issuer}` | The issuer DN of the client certificate\n`{http.request.tls.client.serial}` | The serial number of the client certificate\n`{http.request.tls.client.subject}` | The subject DN of the client certificate\n`{http.request.uri.path.*}` | Parts of the path, split by `/` (0-based from left)\n`{http.request.uri.path.dir}` | The directory, excluding leaf filename\n`{http.request.uri.path.file}` | The filename of the path, excluding directory\n`{http.request.uri.path}` | The path component of the request URI\n`{http.request.uri.query.*}` | Individual query string value\n`{http.request.uri.query}` | The query string (without `?`)\n`{http.request.uri}` | The full request URI\n`{http.response.header.*}` | Specific response header field\n`{http.vars.*}` | Custom variables in the HTTP handler chain\n"
+    },
+    "namespaces": {
+        "": [
+            {
+                "name": "http",
+                "docs": "App is a robust, production-ready HTTP server.\n\nHTTPS is enabled by default if host matchers with qualifying names are used\nin any of routes; certificates are automatically provisioned and renewed.\nAdditionally, automatic HTTPS will also enable HTTPS for servers that listen\nonly on the HTTPS port but which do not have any TLS connection policies\ndefined by adding a good, default TLS connection policy.\n\nIn HTTP routes, additional placeholders are available (replace any `*`):\n\nPlaceholder | Description\n------------|---------------\n`{http.request.cookie.*}` | HTTP request cookie\n`{http.request.header.*}` | Specific request header field\n`{http.request.host.labels.*}` | Request host labels (0-based from right); e.g. for foo.example.com: 0=com, 1=example, 2=foo\n`{http.request.host}` | The host part of the request's Host header\n`{http.request.hostport}` | The host and port from the request's Host header\n`{http.request.method}` | The request method\n`{http.request.orig_method}` | The request's original method\n`{http.request.orig_uri.path.dir}` | The request's original directory\n`{http.request.orig_uri.path.file}` | The request's original filename\n`{http.request.orig_uri.path}` | The request's original path\n`{http.request.orig_uri.query}` | The request's original query string (without `?`)\n`{http.request.orig_uri}` | The request's original URI\n`{http.request.port}` | The port part of the request's Host header\n`{http.request.proto}` | The protocol of the request\n`{http.request.remote.host}` | The host part of the remote client's address\n`{http.request.remote.port}` | The port part of the remote client's address\n`{http.request.remote}` | The address of the remote client\n`{http.request.scheme}` | The request scheme\n`{http.request.tls.version}` | The TLS version name\n`{http.request.tls.cipher_suite}` | The TLS cipher suite\n`{http.request.tls.resumed}` | The TLS connection resumed a previous connection\n`{http.request.tls.proto}` | The negotiated next protocol\n`{http.request.tls.proto_mutual}` | The negotiated next protocol was advertised by the server\n`{http.request.tls.server_name}` | The server name requested by the client, if any\n`{http.request.tls.client.fingerprint}` | The SHA256 checksum of the client certificate\n`{http.request.tls.client.issuer}` | The issuer DN of the client certificate\n`{http.request.tls.client.serial}` | The serial number of the client certificate\n`{http.request.tls.client.subject}` | The subject DN of the client certificate\n`{http.request.uri.path.*}` | Parts of the path, split by `/` (0-based from left)\n`{http.request.uri.path.dir}` | The directory, excluding leaf filename\n`{http.request.uri.path.file}` | The filename of the path, excluding directory\n`{http.request.uri.path}` | The path component of the request URI\n`{http.request.uri.query.*}` | Individual query string value\n`{http.request.uri.query}` | The query string (without `?`)\n`{http.request.uri}` | The full request URI\n`{http.response.header.*}` | Specific response header field\n`{http.vars.*}` | Custom variables in the HTTP handler chain\n"
+            },
+            {
+                "name": "pki",
+                "docs": "PKI provides Public Key Infrastructure facilities for Caddy.\n"
+            },
+            {
+                "name": "tls",
+                "docs": "TLS provides TLS facilities including certificate\nloading and management, client auth, and more.\n"
+            }
+        ],
+        "caddy.listeners": [
+            {
+                "name": "tls",
+                "docs": "tlsPlaceholderWrapper is a no-op listener wrapper that marks\nwhere the TLS listener should be in a chain of listener wrappers.\nIt should only be used if another listener wrapper must be placed\nin front of the TLS handshake.\n"
+            }
+        ],
+        "caddy.logging.encoders": [
+            {
+                "name": "console",
+                "docs": "ConsoleEncoder encodes log entries that are mostly human-readable.\n"
+            },
+            {
+                "name": "filter",
+                "docs": "FilterEncoder can filter (manipulate) fields on\nlog entries before they are actually encoded by\nan underlying encoder.\n"
+            },
+            {
+                "name": "json",
+                "docs": "JSONEncoder encodes entries as JSON.\n"
+            },
+            {
+                "name": "logfmt",
+                "docs": "LogfmtEncoder encodes log entries as logfmt:\nhttps://www.brandur.org/logfmt\n"
+            },
+            {
+                "name": "single_field",
+                "docs": "SingleFieldEncoder writes a log entry that consists entirely\nof a single string field in the log entry. This is useful\nfor custom, self-encoded log entries that consist of a\nsingle field in the structured log entry.\n"
+            }
+        ],
+        "caddy.logging.writers": [
+            {
+                "name": "discard",
+                "docs": "DiscardWriter discards all writes.\n"
+            },
+            {
+                "name": "file",
+                "docs": "FileWriter can write logs to files. By default, log files\nare rotated (\"rolled\") when they get large, and old log\nfiles get deleted, to ensure that the process does not\nexhaust disk space.\n"
+            },
+            {
+                "name": "net",
+                "docs": "NetWriter implements a log writer that outputs to a network socket.\n"
+            },
+            {
+                "name": "stderr",
+                "docs": "StderrWriter writes logs to standard error.\n"
+            },
+            {
+                "name": "stdout",
+                "docs": "StdoutWriter writes logs to standard out.\n"
+            }
+        ],
+        "caddy.storage": [
+            {
+                "name": "file_system",
+                "docs": "FileStorage is a certmagic.Storage wrapper for certmagic.FileStorage.\n"
+            }
+        ],
+        "http.handlers": [
+            {
+                "name": "authentication",
+                "docs": "Authentication is a middleware which provides user authentication.\nRejects requests with HTTP 401 if the request is not authenticated.\n\nIts API is still experimental and may be subject to change.\n"
+            },
+            {
+                "name": "encode",
+                "docs": "Encode is a middleware which can encode responses.\n"
+            },
+            {
+                "name": "error",
+                "docs": "StaticError implements a simple handler that returns an error.\nThis handler returns an error value, but does not write a response.\nThis is useful when you want the server to act as if an error\noccurred; for example, to invoke your custom error handling logic.\n\nSince this handler does not write a response, the error information\nis for use by the server to know how to handle the error.\n"
+            },
+            {
+                "name": "file_server",
+                "docs": "FileServer implements a static file server responder for Caddy.\n"
+            },
+            {
+                "name": "headers",
+                "docs": "Handler is a middleware which modifies request and response headers.\n\nChanges to headers are applied immediately, except for the response\nheaders when Deferred is true or when Required is set. In those cases,\nthe changes are applied when the headers are written to the response.\nNote that deferred changes do not take effect if an error occurs later\nin the middleware chain.\n\nProperties in this module accept placeholders.\n\nResponse header operations can be conditioned upon response status code\nand/or other header values.\n"
+            },
+            {
+                "name": "request_body",
+                "docs": "RequestBody is a middleware for manipulating the request body.\n"
+            },
+            {
+                "name": "reverse_proxy",
+                "docs": "Handler implements a highly configurable and production-ready reverse proxy.\n\nUpon proxying, this module sets the following placeholders (which can be used\nboth within and after this handler):\n\nPlaceholder | Description\n------------|-------------\n`{http.reverse_proxy.upstream.address}` | The full address to the upstream as given in the config\n`{http.reverse_proxy.upstream.hostport}` | The host:port of the upstream\n`{http.reverse_proxy.upstream.host}` | The host of the upstream\n`{http.reverse_proxy.upstream.port}` | The port of the upstream\n`{http.reverse_proxy.upstream.requests}` | The approximate current number of requests to the upstream\n`{http.reverse_proxy.upstream.max_requests}` | The maximum approximate number of requests allowed to the upstream\n`{http.reverse_proxy.upstream.fails}` | The number of recent failed requests to the upstream\n"
+            },
+            {
+                "name": "rewrite",
+                "docs": "Rewrite is a middleware which can rewrite HTTP requests.\n\nThe Method and URI properties are \"setters\": the request URI\nwill be set to the given values. Other properties are \"modifiers\":\nthey modify existing files but do not explicitly specify what the\nresult will be. It is atypical to combine the use of setters and\nmodifiers in a single rewrite.\n"
+            },
+            {
+                "name": "static_response",
+                "docs": "StaticResponse implements a simple responder for static responses.\n"
+            },
+            {
+                "name": "subroute",
+                "docs": "Subroute implements a handler that compiles and executes routes.\nThis is useful for a batch of routes that all inherit the same\nmatchers, or for multiple routes that should be treated as a\nsingle route.\n\nYou can also use subroutes to handle errors from its handlers.\nFirst the primary routes will be executed, and if they return an\nerror, the errors routes will be executed; in that case, an error\nis only returned to the entry point at the server if there is an\nadditional error returned from the errors routes.\n"
+            },
+            {
+                "name": "templates",
+                "docs": "Templates is a middleware which executes response bodies as Go templates.\nThe syntax is documented in the Go standard library's\n[text/template package](https://golang.org/pkg/text/template/).\n\n⚠️ Template functions/actions are still experimental, so they are subject to change.\n\n[All Sprig functions](https://masterminds.github.io/sprig/) are supported.\n\nIn addition to the standard functions and Sprig functions, Caddy adds\nextra functions and data that are available to a template:\n\n##### `.Args`\n\nAccess arguments passed to this page/context, for example as the result of a `include`.\n\n```\n{{.Args 0}} // first argument\n```\n\n##### `.Cookie`\n\nGets the value of a cookie by name.\n\n```\n{{.Cookie \"cookiename\"}}\n```\n\n##### `env`\n\nGets an environment variable.\n\n```\n{{env \"VAR_NAME\"}}\n```\n\n##### `.Host`\n\nReturns the hostname portion (no port) of the Host header of the HTTP request.\n\n```\n{{.Host}}\n```\n\n##### `httpInclude`\n\nIncludes the contents of another file by making a virtual HTTP request (also known as a sub-request). The URI path must exist on the same virtual server because the request does not use sockets; instead, the request is crafted in memory and the handler is invoked directly for increased efficiency.\n\n```\n{{httpInclude \"/foo/bar?q=val\"}}\n```\n\n##### `include`\n\nIncludes the contents of another file. Optionally can pass key-value pairs as arguments to be accessed by the included file.\n\n```\n{{include \"path/to/file.html\"}}  // no arguments\n{{include \"path/to/file.html\" \"arg1\" 2 \"value 3\"}}  // with arguments\n```\n\n##### `listFiles`\n\nReturns a list of the files in the given directory, which is relative to the template context's file root.\n\n```\n{{listFiles \"/mydir\"}}\n```\n\n##### `markdown`\n\nRenders the given Markdown text as HTML.\n\n```\n{{markdown \"My _markdown_ text\"}}\n```\n\n##### `.RemoteIP`\n\nReturns the client's IP address.\n\n```\n{{.RemoteIP}}\n```\n\n##### `.Req`\n\nAccesses the current HTTP request, which has various fields, including:\n\n   - `.Method` - the method\n   - `.URL` - the URL, which in turn has component fields (Scheme, Host, Path, etc.)\n   - `.Header` - the header fields\n   - `.Host` - the Host or :authority header of the request\n\n```\n{{.Req.Header.Get \"User-Agent\"}}\n```\n\n##### `.RespHeader.Add`\n\nAdds a header field to the HTTP response.\n\n```\n{{.RespHeader.Add \"Field-Name\" \"val\"}}\n```\n\n##### `.RespHeader.Del`\n\nDeletes a header field on the HTTP response.\n\n```\n{{.RespHeader.Del \"Field-Name\"}}\n```\n\n##### `.RespHeader.Set`\n\nSets a header field on the HTTP response, replacing any existing value.\n\n```\n{{.RespHeader.Set \"Field-Name\" \"val\"}}\n```\n\n##### `splitFrontMatter`\n\nSplits front matter out from the body. Front matter is metadata that appears at the very beginning of a file or string. Front matter can be in YAML, TOML, or JSON formats:\n\n**TOML** front matter starts and ends with `+++`:\n\n```\n+++\ntemplate = \"blog\"\ntitle = \"Blog Homepage\"\nsitename = \"A Caddy site\"\n+++\n```\n\n**YAML** is surrounded by `---`:\n\n```\n---\ntemplate: blog\ntitle: Blog Homepage\nsitename: A Caddy site\n---\n```\n\n**JSON** is simply `{` and `}`:\n\n```\n{\n\t\"template\": \"blog\",\n\t\"title\": \"Blog Homepage\",\n\t\"sitename\": \"A Caddy site\"\n}\n```\n\nThe resulting front matter will be made available like so:\n\n- `.Meta` to access the metadata fields, for example: `{{$parsed.Meta.title}}`\n- `.Body` to access the body after the front matter, for example: `{{markdown $parsed.Body}}`\n\n##### `stripHTML`\n\nRemoves HTML from a string.\n\n```\n{{stripHTML \"Shows <b>only</b> text content\"}}\n```\n"
+            },
+            {
+                "name": "vars",
+                "docs": "VarsMiddleware is an HTTP middleware which sets variables\nin the context, mainly for use by placeholders. The\nplaceholders have the form: `{http.vars.variable_name}`\n"
+            }
+        ],
+        "http.matchers": [
+            {
+                "name": "expression",
+                "docs": "MatchExpression matches requests by evaluating a\n[CEL](https://github.com/google/cel-spec) expression.\nThis enables complex logic to be expressed using a comfortable,\nfamiliar syntax.\n\nThis matcher's JSON interface is actually a string, not a struct.\nThe generated docs are not correct because this type has custom\nmarshaling logic.\n\nCOMPATIBILITY NOTE: This module is still experimental and is not\nsubject to Caddy's compatibility guarantee.\n"
+            },
+            {
+                "name": "file",
+                "docs": "MatchFile is an HTTP request matcher that can match\nrequests based upon file existence.\n\nUpon matching, two new placeholders will be made\navailable:\n\n- `{http.matchers.file.relative}` The root-relative\npath of the file. This is often useful when rewriting\nrequests.\n- `{http.matchers.file.absolute}` The absolute path\nof the matched file.\n"
+            },
+            {
+                "name": "header",
+                "docs": "MatchHeader matches requests by header fields. It performs fast,\nexact string comparisons of the field values. Fast prefix, suffix,\nand substring matches can also be done by suffixing, prefixing, or\nsurrounding the value with the wildcard `*` character, respectively.\nIf a list is null, the header must not exist. If the list is empty,\nthe field must simply exist, regardless of its value.\n"
+            },
+            {
+                "name": "header_regexp",
+                "docs": "MatchHeaderRE matches requests by a regular expression on header fields.\n\nUpon a match, it adds placeholders to the request: `{http.regexp.name.capture_group}`\nwhere `name` is the regular expression's name, and `capture_group` is either\nthe named or positional capture group from the expression itself. If no name\nis given, then the placeholder omits the name: `{http.regexp.capture_group}`\n(potentially leading to collisions).\n"
+            },
+            {
+                "name": "host",
+                "docs": "MatchHost matches requests by the Host value (case-insensitive).\n\nWhen used in a top-level HTTP route,\n[qualifying domain names](/docs/automatic-https#hostname-requirements)\nmay trigger [automatic HTTPS](/docs/automatic-https), which automatically\nprovisions and renews certificates for you. Before doing this, you\nshould ensure that DNS records for these domains are properly configured,\nespecially A/AAAA pointed at your server.\n\nAutomatic HTTPS can be\n[customized or disabled](/docs/modules/http#servers/automatic_https).\n\nWildcards (`*`) may be used to represent exactly one label of the\nhostname, in accordance with RFC 1034 (because host matchers are also\nused for automatic HTTPS which influences TLS certificates). Thus,\na host of `*` matches hosts like `localhost` or `internal` but not\n`example.com`. To catch all hosts, omit the host matcher entirely.\n\nThe wildcard can be useful for matching all subdomains, for example:\n`*.example.com` matches `foo.example.com` but not `foo.bar.example.com`.\n"
+            },
+            {
+                "name": "method",
+                "docs": "MatchMethod matches requests by the method.\n"
+            },
+            {
+                "name": "not",
+                "docs": "MatchNot matches requests by negating the results of its matcher\nsets. A single \"not\" matcher takes one or more matcher sets. Each\nmatcher set is OR'ed; in other words, if any matcher set returns\ntrue, the final result of the \"not\" matcher is false. Individual\nmatchers within a set work the same (i.e. different matchers in\nthe same set are AND'ed).\n\nNote that the generated docs which describe the structure of\nthis module are wrong because of how this type unmarshals JSON\nin a custom way. The correct structure is:\n\n```json\n[\n\t{},\n\t{}\n]\n```\n\nwhere each of the array elements is a matcher set, i.e. an\nobject keyed by matcher name.\n"
+            },
+            {
+                "name": "path",
+                "docs": "MatchPath matches requests by the URI's path (case-insensitive). Path\nmatches are exact, but wildcards may be used:\n\n- At the end, for a prefix match (`/prefix/*`)\n- At the beginning, for a suffix match (`*.suffix`)\n- On both sides, for a substring match (`*/contains/*`)\n- In the middle, for a globular match (`/accounts/*/info`)\n\nThis matcher is fast, so it does not support regular expressions or\ncapture groups. For slower but more powerful matching, use the\npath_regexp matcher.\n"
+            },
+            {
+                "name": "path_regexp",
+                "docs": "MatchPathRE matches requests by a regular expression on the URI's path.\n\nUpon a match, it adds placeholders to the request: `{http.regexp.name.capture_group}`\nwhere `name` is the regular expression's name, and `capture_group` is either\nthe named or positional capture group from the expression itself. If no name\nis given, then the placeholder omits the name: `{http.regexp.capture_group}`\n(potentially leading to collisions).\n"
+            },
+            {
+                "name": "protocol",
+                "docs": "MatchProtocol matches requests by protocol.\n"
+            },
+            {
+                "name": "query",
+                "docs": "MatchQuery matches requests by URI's query string.\n"
+            },
+            {
+                "name": "remote_ip",
+                "docs": "MatchRemoteIP matches requests by client IP (or CIDR range).\n"
+            },
+            {
+                "name": "vars",
+                "docs": "VarsMatcher is an HTTP request matcher which can match\nrequests based on variables in the context.\n"
+            },
+            {
+                "name": "vars_regexp",
+                "docs": "MatchVarsRE matches the value of the context variables by a given regular expression.\n\nUpon a match, it adds placeholders to the request: `{http.regexp.name.capture_group}`\nwhere `name` is the regular expression's name, and `capture_group` is either\nthe named or positional capture group from the expression itself. If no name\nis given, then the placeholder omits the name: `{http.regexp.capture_group}`\n(potentially leading to collisions).\n"
+            }
+        ],
+        "tls.handshake_match": [
+            {
+                "name": "sni",
+                "docs": "MatchServerName matches based on SNI. Names in\nthis list may use left-most-label wildcards,\nsimilar to wildcard certificates.\n"
+            }
+        ]
+    },
+    "breadcrumb": {
+        "": {
+            "type": "struct",
+            "type_name": "github.com/caddyserver/caddy/v2.Config",
+            "struct_fields": [
+                {
+                    "key": "admin",
+                    "value": {
+                        "type": "struct",
+                        "type_name": "github.com/caddyserver/caddy/v2.AdminConfig",
+                        "struct_fields": [
+                            {
+                                "key": "disabled",
+                                "value": {
+                                    "type": "bool",
+                                    "doc": "If true, the admin endpoint will be completely disabled.\nNote that this makes any runtime changes to the config\nimpossible, since the interface to do so is through the\nadmin endpoint."
+                                },
+                                "doc": "If true, the admin endpoint will be completely disabled.\nNote that this makes any runtime changes to the config\nimpossible, since the interface to do so is through the\nadmin endpoint."
+                            },
+                            {
+                                "key": "listen",
+                                "value": {
+                                    "type": "string",
+                                    "doc": "The address to which the admin endpoint's listener should\nbind itself. Can be any single network address that can be\nparsed by Caddy. Default: localhost:2019"
+                                },
+                                "doc": "The address to which the admin endpoint's listener should\nbind itself. Can be any single network address that can be\nparsed by Caddy. Default: localhost:2019"
+                            },
+                            {
+                                "key": "enforce_origin",
+                                "value": {
+                                    "type": "bool",
+                                    "doc": "If true, CORS headers will be emitted, and requests to the\nAPI will be rejected if their `Host` and `Origin` headers\ndo not match the expected value(s). Use `origins` to\ncustomize which origins/hosts are allowed.If `origins` is\nnot set, the listen address is the only value allowed by\ndefault."
+                                },
+                                "doc": "If true, CORS headers will be emitted, and requests to the\nAPI will be rejected if their `Host` and `Origin` headers\ndo not match the expected value(s). Use `origins` to\ncustomize which origins/hosts are allowed.If `origins` is\nnot set, the listen address is the only value allowed by\ndefault."
+                            },
+                            {
+                                "key": "origins",
+                                "value": {
+                                    "type": "array",
+                                    "elems": {
+                                        "type": "string",
+                                        "doc": "The list of allowed origins/hosts for API requests. Only needed\nif accessing the admin endpoint from a host different from the\nsocket's network interface or if `enforce_origin` is true. If not\nset, the listener address will be the default value. If set but\nempty, no origins will be allowed."
+                                    }
+                                },
+                                "doc": "The list of allowed origins/hosts for API requests. Only needed\nif accessing the admin endpoint from a host different from the\nsocket's network interface or if `enforce_origin` is true. If not\nset, the listener address will be the default value. If set but\nempty, no origins will be allowed."
+                            },
+                            {
+                                "key": "config",
+                                "value": {
+                                    "type": "struct",
+                                    "type_name": "github.com/caddyserver/caddy/v2.ConfigSettings",
+                                    "struct_fields": [
+                                        {
+                                            "key": "persist",
+                                            "value": {
+                                                "type": "bool",
+                                                "doc": "Whether to keep a copy of the active config on disk. Default is true."
+                                            },
+                                            "doc": "Whether to keep a copy of the active config on disk. Default is true."
+                                        }
+                                    ],
+                                    "doc": "Options related to configuration management.\n\nConfigSettings configures the, uh, configuration... and\nmanagement thereof."
+                                },
+                                "doc": "Options related to configuration management.\n\nConfigSettings configures the, uh, configuration... and\nmanagement thereof."
+                            }
+                        ],
+                        "doc": "AdminConfig configures Caddy's API endpoint, which is used\nto manage Caddy while it is running.\n"
+                    },
+                    "doc": "admin configures Caddy's API endpoint, which is used\nto manage Caddy while it is running."
+                },
+                {
+                    "key": "logging",
+                    "value": {
+                        "type": "struct",
+                        "type_name": "github.com/caddyserver/caddy/v2.Logging",
+                        "struct_fields": [
+                            {
+                                "key": "sink",
+                                "value": {
+                                    "type": "struct",
+                                    "type_name": "github.com/caddyserver/caddy/v2.StandardLibLog",
+                                    "struct_fields": [
+                                        {
+                                            "key": "writer",
+                                            "value": {
+                                                "type": "module",
+                                                "doc": "The module that writes out log entries for the sink.",
+                                                "module_namespace": "caddy.logging.writers",
+                                                "module_inline_key": "output"
+                                            },
+                                            "doc": "The module that writes out log entries for the sink."
+                                        }
+                                    ],
+                                    "doc": "sink is the destination for all unstructured logs emitted\nfrom Go's standard library logger. These logs are common\nin dependencies that are not designed specifically for use\nin Caddy. Because it is global and unstructured, the sink\nlacks most advanced features and customizations.\n\nStandardLibLog configures the default Go standard library\nglobal logger in the log package. This is necessary because\nmodule dependencies which are not built specifically for\nCaddy will use the standard logger. This is also known as\nthe \"sink\" logger."
+                                },
+                                "doc": "sink is the destination for all unstructured logs emitted\nfrom Go's standard library logger. These logs are common\nin dependencies that are not designed specifically for use\nin Caddy. Because it is global and unstructured, the sink\nlacks most advanced features and customizations.\n\nStandardLibLog configures the default Go standard library\nglobal logger in the log package. This is necessary because\nmodule dependencies which are not built specifically for\nCaddy will use the standard logger. This is also known as\nthe \"sink\" logger."
+                            },
+                            {
+                                "key": "logs",
+                                "value": {
+                                    "type": "map",
+                                    "map_keys": {
+                                        "type": "string"
+                                    },
+                                    "elems": {
+                                        "type": "struct",
+                                        "type_name": "github.com/caddyserver/caddy/v2.CustomLog",
+                                        "struct_fields": [
+                                            {
+                                                "key": "writer",
+                                                "value": {
+                                                    "type": "module",
+                                                    "doc": "The writer defines where log entries are emitted.",
+                                                    "module_namespace": "caddy.logging.writers",
+                                                    "module_inline_key": "output"
+                                                },
+                                                "doc": "The writer defines where log entries are emitted."
+                                            },
+                                            {
+                                                "key": "encoder",
+                                                "value": {
+                                                    "type": "module",
+                                                    "doc": "The encoder is how the log entries are formatted or encoded.",
+                                                    "module_namespace": "caddy.logging.encoders",
+                                                    "module_inline_key": "format"
+                                                },
+                                                "doc": "The encoder is how the log entries are formatted or encoded."
+                                            },
+                                            {
+                                                "key": "level",
+                                                "value": {
+                                                    "type": "string",
+                                                    "doc": "level is the minimum level to emit, and is inclusive.\nPossible levels: DEBUG, INFO, WARN, ERROR, PANIC, and FATAL"
+                                                },
+                                                "doc": "level is the minimum level to emit, and is inclusive.\nPossible levels: DEBUG, INFO, WARN, ERROR, PANIC, and FATAL"
+                                            },
+                                            {
+                                                "key": "sampling",
+                                                "value": {
+                                                    "type": "struct",
+                                                    "type_name": "github.com/caddyserver/caddy/v2.LogSampling",
+                                                    "struct_fields": [
+                                                        {
+                                                            "key": "interval",
+                                                            "value": {
+                                                                "type": "int",
+                                                                "type_name": "time.Duration",
+                                                                "doc": "The window over which to conduct sampling.\n\nA Duration represents the elapsed time between two instants\nas an int64 nanosecond count. The representation limits the\nlargest representable duration to approximately 290 years."
+                                                            },
+                                                            "doc": "The window over which to conduct sampling.\n\nA Duration represents the elapsed time between two instants\nas an int64 nanosecond count. The representation limits the\nlargest representable duration to approximately 290 years."
+                                                        },
+                                                        {
+                                                            "key": "first",
+                                                            "value": {
+                                                                "type": "int",
+                                                                "doc": "Log this many entries within a given level and\nmessage for each interval."
+                                                            },
+                                                            "doc": "Log this many entries within a given level and\nmessage for each interval."
+                                                        },
+                                                        {
+                                                            "key": "thereafter",
+                                                            "value": {
+                                                                "type": "int",
+                                                                "doc": "If more entries with the same level and message\nare seen during the same interval, keep one in\nthis many entries until the end of the interval."
+                                                            },
+                                                            "doc": "If more entries with the same level and message\nare seen during the same interval, keep one in\nthis many entries until the end of the interval."
+                                                        }
+                                                    ],
+                                                    "doc": "sampling configures log entry sampling. If enabled,\nonly some log entries will be emitted. This is useful\nfor improving performance on extremely high-pressure\nservers.\n\nLogSampling configures log entry sampling."
+                                                },
+                                                "doc": "sampling configures log entry sampling. If enabled,\nonly some log entries will be emitted. This is useful\nfor improving performance on extremely high-pressure\nservers.\n\nLogSampling configures log entry sampling."
+                                            },
+                                            {
+                                                "key": "include",
+                                                "value": {
+                                                    "type": "array",
+                                                    "elems": {
+                                                        "type": "string",
+                                                        "doc": "include defines the names of loggers to emit in this\nlog. For example, to include only logs emitted by the\nadmin API, you would include \"admin.api\"."
+                                                    }
+                                                },
+                                                "doc": "include defines the names of loggers to emit in this\nlog. For example, to include only logs emitted by the\nadmin API, you would include \"admin.api\"."
+                                            },
+                                            {
+                                                "key": "exclude",
+                                                "value": {
+                                                    "type": "array",
+                                                    "elems": {
+                                                        "type": "string",
+                                                        "doc": "exclude defines the names of loggers that should be\nskipped by this log. For example, to exclude only\nHTTP access logs, you would exclude \"http.log.access\"."
+                                                    }
+                                                },
+                                                "doc": "exclude defines the names of loggers that should be\nskipped by this log. For example, to exclude only\nHTTP access logs, you would exclude \"http.log.access\"."
+                                            }
+                                        ],
+                                        "doc": "logs are your logs, keyed by an arbitrary name of your\nchoosing. The default log can be customized by defining\na log called \"default\". You can further define other logs\nand filter what kinds of entries they accept.\n\nCustomLog represents a custom logger configuration.\n\nBy default, a log will emit all log entries. Some entries\nwill be skipped if sampling is enabled. Further, the Include\nand Exclude parameters define which loggers (by name) are\nallowed or rejected from emitting in this log. If both Include\nand Exclude are populated, their values must be mutually\nexclusive, and longer namespaces have priority. If neither\nare populated, all logs are emitted."
+                                    }
+                                },
+                                "doc": "logs are your logs, keyed by an arbitrary name of your\nchoosing. The default log can be customized by defining\na log called \"default\". You can further define other logs\nand filter what kinds of entries they accept.\n\nCustomLog represents a custom logger configuration.\n\nBy default, a log will emit all log entries. Some entries\nwill be skipped if sampling is enabled. Further, the Include\nand Exclude parameters define which loggers (by name) are\nallowed or rejected from emitting in this log. If both Include\nand Exclude are populated, their values must be mutually\nexclusive, and longer namespaces have priority. If neither\nare populated, all logs are emitted."
+                            }
+                        ],
+                        "doc": "Logging facilitates logging within Caddy. The default log is\ncalled \"default\" and you can customize it. You can also define\nadditional logs.\n\nBy default, all logs at INFO level and higher are written to\nstandard error (\"stderr\" writer) in a human-readable format\n(\"console\" encoder if stdout is an interactive terminal, \"json\"\nencoder otherwise).\n\nAll defined logs accept all log entries by default, but you\ncan filter by level and module/logger names. A logger's name\nis the same as the module's name, but a module may append to\nlogger names for more specificity. For example, you can\nfilter logs emitted only by HTTP handlers using the name\n\"http.handlers\", because all HTTP handler module names have\nthat prefix.\n\nCaddy logs (except the sink) are zero-allocation, so they are\nvery high-performing in terms of memory and CPU time. Enabling\nsampling can further increase throughput on extremely high-load\nservers.\n"
+                    },
+                    "doc": "logging facilitates logging within Caddy. The default log is\ncalled \"default\" and you can customize it. You can also define\nadditional logs.\n\nBy default, all logs at INFO level and higher are written to\nstandard error (\"stderr\" writer) in a human-readable format\n(\"console\" encoder if stdout is an interactive terminal, \"json\"\nencoder otherwise).\n\nAll defined logs accept all log entries by default, but you\ncan filter by level and module/logger names. A logger's name\nis the same as the module's name, but a module may append to\nlogger names for more specificity. For example, you can\nfilter logs emitted only by HTTP handlers using the name\n\"http.handlers\", because all HTTP handler module names have\nthat prefix.\n\nCaddy logs (except the sink) are zero-allocation, so they are\nvery high-performing in terms of memory and CPU time. Enabling\nsampling can further increase throughput on extremely high-load\nservers."
+                },
+                {
+                    "key": "storage",
+                    "value": {
+                        "type": "module",
+                        "doc": "storage is a storage module that defines how/where Caddy\nstores assets (such as TLS certificates). The default storage\nmodule is `caddy.storage.file_system` (the local file system),\nand the default path\n[depends on the OS and environment](/docs/conventions#data-directory).",
+                        "module_namespace": "caddy.storage",
+                        "module_inline_key": "module"
+                    },
+                    "doc": "storage is a storage module that defines how/where Caddy\nstores assets (such as TLS certificates). The default storage\nmodule is `caddy.storage.file_system` (the local file system),\nand the default path\n[depends on the OS and environment](/docs/conventions#data-directory)."
+                },
+                {
+                    "key": "apps",
+                    "value": {
+                        "type": "module_map",
+                        "type_name": "github.com/caddyserver/caddy/v2.ModuleMap",
+                        "doc": "apps are the apps that Caddy will load and run. The\napp module name is the key, and the app's config is the\nassociated value.\n\nModuleMap is a map that can contain multiple modules,\nwhere the map key is the module's name. (The namespace\nis usually read from an associated field's struct tag.)\nBecause the module's name is given as the key in a\nmodule map, the name does not have to be given in the\njson.RawMessage.",
+                        "module_namespace": ""
+                    },
+                    "doc": "apps are the apps that Caddy will load and run. The\napp module name is the key, and the app's config is the\nassociated value.\n\nModuleMap is a map that can contain multiple modules,\nwhere the map key is the module's name. (The namespace\nis usually read from an associated field's struct tag.)\nBecause the module's name is given as the key in a\nmodule map, the name does not have to be given in the\njson.RawMessage."
+                }
+            ],
+            "doc": "Config is the top (or beginning) of the Caddy configuration structure.\nCaddy config is expressed natively as a JSON document. If you prefer\nnot to work with JSON directly, there are [many config adapters](/docs/config-adapters)\navailable that can convert various inputs into Caddy JSON.\n\nMany parts of this config are extensible through the use of Caddy modules.\nFields which have a json.RawMessage type and which appear as dots (•••) in\nthe online docs can be fulfilled by modules in a certain module\nnamespace. The docs show which modules can be used in a given place.\n\nWhenever a module is used, its name must be given either inline as part of\nthe module, or as the key to the module's value. The docs will make it clear\nwhich to use.\n\nGenerally, all config settings are optional, as it is Caddy convention to\nhave good, documented default values. If a parameter is required, the docs\nshould say so.\n\nGo programs which are directly building a Config struct value should take\ncare to populate the JSON-encodable fields of the struct (i.e. the fields\nwith `json` struct tags) if employing the module lifecycle (e.g. Provision\nmethod calls).\n"
+        },
+        "apps": {
+            "type": "module_map",
+            "type_name": "github.com/caddyserver/caddy/v2.ModuleMap",
+            "doc": "apps are the apps that Caddy will load and run. The\napp module name is the key, and the app's config is the\nassociated value.\n\nModuleMap is a map that can contain multiple modules,\nwhere the map key is the module's name. (The namespace\nis usually read from an associated field's struct tag.)\nBecause the module's name is given as the key in a\nmodule map, the name does not have to be given in the\njson.RawMessage.\n",
+            "module_namespace": ""
+        }
+    }
+}
