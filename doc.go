@@ -3,6 +3,7 @@ package jsonschema
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -21,19 +22,43 @@ func loadJSONDoc() error {
 	}
 
 	// top level namespaces
+	visited := map[string]struct{}{}
 	for i, namespace := range caddyDoc.Namespaces[""] {
 		b, err := fetchDocJSON(namespace.Name)
 		if err != nil {
 			return err
 		}
-		var tmp struct {
-			Structure DocStruct `json:"structure,omitempty"`
-		}
+		var tmp CaddyDoc
 		if err := json.Unmarshal(b, &tmp); err != nil {
 			return err
 		}
 		namespace.Structure = tmp.Structure
 		caddyDoc.Namespaces[""][i] = namespace
+
+		for ns, list := range tmp.Namespaces {
+			names := []string{}
+			for _, m := range list {
+				modulePath := m.Name
+				if ns != "" {
+					modulePath = ns + "." + m.Name
+				}
+				// check if visited
+				if _, ok := visited[modulePath]; ok {
+					continue
+				}
+				// mark visited
+				visited[modulePath] = struct{}{}
+
+				names = append(names, modulePath)
+				if m.Structure == nil {
+					m.Structure = &DocStruct{
+						Doc: m.Docs,
+					}
+				}
+				caddyDoc.Namespaces[ns] = append(caddyDoc.Namespaces[ns], m)
+			}
+			log.Println(names)
+		}
 	}
 
 	return nil
@@ -43,6 +68,7 @@ func loadJSONDoc() error {
 type DocStruct struct {
 	Type    string `json:"type,omitempty"`
 	Package string `json:"type_name,omitempty"`
+	Doc     string `json:"doc,omitempty"`
 
 	Key     string     `json:"key,omitempty"`
 	Value   *DocStruct `json:"value,omitempty"`
@@ -59,15 +85,16 @@ type DocStruct struct {
 
 // CaddyDoc ...
 type CaddyDoc struct {
-	Structure struct {
-		Doc string `json:"doc,omitempty"`
-	} `json:"structure,omitempty"`
-	Namespaces map[string][]struct {
-		Name string `json:"name,omitempty"`
-		Docs string `json:"docs,omitempty"`
+	Structure  *DocStruct   `json:"structure,omitempty"`
+	Namespaces DocNamespace `json:"namespaces,omitempty"`
+}
 
-		Structure DocStruct `json:"-"`
-	} `json:"namespaces,omitempty"`
+// DocNamespace ...
+type DocNamespace map[string][]struct {
+	Name string `json:"name,omitempty"`
+	Docs string `json:"docs,omitempty"`
+
+	Structure *DocStruct `json:"-"`
 }
 
 var caddyDoc CaddyDoc

@@ -9,7 +9,21 @@
                                 {
                                     "path": [
                                         "/users"
-                                    ]
+                                    ],
+                                    "header": {
+                                        "X-Header": [
+                                            "soemthing"
+                                        ]
+                                    },
+                                    "host": []
+                                },
+                                {
+                                    "host": [
+                                        "me.com"
+                                    ],
+                                    "file": {
+                                        "root": ""
+                                    }
                                 }
                             ],
                             "handle": [
@@ -34,6 +48,10 @@
                                             ]
                                         }
                                     ]
+                                },
+                                {
+                                    "handler": "file_server",
+                                    "root": ""
                                 }
                             ]
                         }
@@ -69,6 +87,21 @@
                     "foreground": true
                 }
             ]
+        }
+    },
+    "admin": {
+        "listen": "",
+        "config": {
+            "persist": false
+        }
+    },
+    "logging": {
+        "logs": {
+            "mylog": {
+                "encoder": {
+                    "format": "json"
+                }
+            }
         }
     }
 }

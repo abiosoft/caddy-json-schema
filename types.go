@@ -15,10 +15,11 @@ var flatModuleMap = Modules{}
 
 // Schema ...
 type Schema struct {
-	Title       string `json:"title,omitempty"`
-	Description string `json:"description,omitempty"`
-	Type        string `json:"type,omitempty"`
-	Ref         string `json:"$ref,omitempty"`
+	Title               string `json:"title,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdownDescription,omitempty"`
+	Type                string `json:"type,omitempty"`
+	Ref                 string `json:"$ref,omitempty"`
 
 	ArrayItems           *Schema            `json:"items,omitempty"`
 	Definitions          map[string]*Schema `json:"definitions,omitempty"`

@@ -14,8 +14,6 @@ import (
 )
 
 func init() {
-	// caddy.RegisterModule(Middleware{})
-	// httpcaddyfile.RegisterHandlerDirective("visitors_ip", parseCaddyfile)
 	caddycmd.RegisterCommand(caddycmd.Command{
 		Name:  "json-schema",
 		Func:  cmdSchema,
@@ -36,9 +34,9 @@ generate to caddy_json_schema.json in the current directory.
 }
 
 func cmdSchema(fs caddycmd.Flags) (int, error) {
-	if err := loadJSONDoc(); err != nil {
-		return 1, err
-	}
+	// if err := loadJSONDoc(); err != nil {
+	// 	return 1, err
+	// }
 
 	if err := getAllModules(); err != nil {
 		return 1, err
@@ -95,31 +93,46 @@ func getAllModules() error {
 				}
 
 				module := flatModuleMap[mod]
-				module.Docs = doc.Docs
+				module.Doc = doc.Structure
 				flatModuleMap[mod] = module
 			}
 		}
 	}
 
 	{
+		// populate global object
+		definitions := map[string]*Schema{}
 		// use separate loop to ensure module list has populated.
 		for modName, module := range flatModuleMap {
 			module.Field.populate(module.Type)
-			globalSchema.Definitions[modName] = module.Field.toSchema()
+			definitions[modName] = module.Field.toSchema()
 		}
+
+		// full config
+		configField := Field{}
+		configField.populate(caddy.Config{})
+		globalSchema = configField.toSchema()
+		globalSchema.Definitions = definitions
+		globalSchema.Description = configField.description("object")
+		globalSchema.MarkdownDescription = globalSchema.Description
+
+		// in case this schema is incomplete, support additional custom items.
+		globalSchema.AdditionalItems = true
 	}
 
 	{
 		// topLevel apps
-		globalSchema.AdditionalItems = true
-		apps := NewSchema()
-		for modName := range moduleMap[""] {
-			s := NewSchema()
-			s.setRef(modName)
-			apps.Properties[modName] = s
-		}
-		globalSchema.Properties["apps"] = apps
-		globalSchema.Required = []string{"apps"}
+		// globalSchema.AdditionalItems = true
+		// apps := NewSchema()
+		// apps.Description = caddyDoc.Structure.Doc
+		// apps.MarkdownDescription = caddyDoc.Structure.Doc
+		// for modName := range moduleMap[""] {
+		// 	s := NewSchema()
+		// 	s.setRef(modName)
+		// 	apps.Properties[modName] = s
+		// }
+		// globalSchema.Properties["apps"] = apps
+		// globalSchema.Required = []string{"apps"}
 	}
 
 	return nil
@@ -148,7 +161,7 @@ func generateSchema() error {
 type Field struct {
 	// keep track of the current module
 	Module string
-	Docs   string
+	Doc    *DocStruct
 
 	Name   string
 	Fields []Field
@@ -161,29 +174,41 @@ type Field struct {
 	Nest *Field
 
 	// Module loaders
-	Loader    []string
-	LoaderKey string // inline_key
+	Loader     []string // list of modules
+	LoaderKey  string   // inline_key
+	LoaderType reflect.Type
 }
 
 func (f Field) description(fieldType string) string {
-	doc := f.Docs
-	if f.Docs == "" {
-		typ := reflect.TypeOf(flatModuleMap[f.Module].Type)
-		if typ != nil {
-			if typ.Kind() == reflect.Ptr {
-				typ = typ.Elem()
-			}
-			// only show link for public fields
-			if typ.Name() != "" {
-				c := rune(typ.Name()[0])
-				if unicode.IsUpper(c) && unicode.IsLetter(c) {
-					doc = fmt.Sprintf("https://pkg.go.dev/%s#%s", typ.PkgPath(), typ.Name())
+	doc := ""
+	if f.Doc != nil {
+		doc = f.Doc.Doc
+	}
+
+	typ := reflect.TypeOf(flatModuleMap[f.Module].Type)
+	if typ != nil {
+		if typ.Kind() == reflect.Ptr {
+			typ = typ.Elem()
+		}
+		// only show link for public fields
+		if typ.Name() != "" {
+			c := rune(typ.Name()[0])
+			if unicode.IsUpper(c) && unicode.IsLetter(c) {
+				godoc := fmt.Sprintf("[godoc](https://pkg.go.dev/%s#%s)", typ.PkgPath(), typ.Name())
+				if doc != "" {
+					doc = godoc + "\n\n" + doc
+				} else {
+					doc = godoc
 				}
 			}
 		}
 	}
-	info := fmt.Sprintf("%s\nModule: %s", fieldType, f.Module)
-	return info + "\n" + doc
+
+	info := fmt.Sprintf("%s: `%s`  \nModule: `%s`  \n", f.Name, fieldType, f.Module)
+	if f.Module == "" {
+		info = fmt.Sprintf("%s: `%s`  \n", f.Name, fieldType)
+	}
+	return info + doc
 }
 
 func (f Field) toSchema() *Schema {
@@ -191,11 +216,11 @@ func (f Field) toSchema() *Schema {
 	s.setType(f.Type)
 
 	if len(f.Loader) > 0 {
-		s.setType("array")
-		s.ArrayItems = NewSchema()
+		sl := NewSchema()
 
 		if f.LoaderKey != "" {
-			// handlers e.t.c.
+			// when loader key is set, we expect an array.
+			// combine {if, then} to improve suggestions.
 			names := []string{}
 			for _, l := range f.Loader {
 				sub := NewSchema()
@@ -219,23 +244,26 @@ func (f Field) toSchema() *Schema {
 					sub.Then = sthen
 				}
 
-				s.ArrayItems.AllOf = append(s.ArrayItems.AllOf, sub)
+				sl.AllOf = append(sl.AllOf, sub)
 			}
 
+			// make loaderKey a required field
 			inline := NewSchema()
 			{
 				tmp := NewSchema()
 				tmp.setType("string")
 				tmp.Enum = names
-				tmp.Description = fmt.Sprintf("%s name\n%s", f.LoaderKey, f.description("string"))
+				desc := "`%s` key to identify specified module.  \n%s: `string`  \nModule: `%s`"
+				tmp.Description = fmt.Sprintf(desc, f.Name, f.LoaderKey, f.Module)
+				tmp.MarkdownDescription = tmp.Description
 
 				inline.Properties[f.LoaderKey] = tmp
-				s.ArrayItems.AllOf = append(s.ArrayItems.AllOf, inline)
+				sl.AllOf = append(sl.AllOf, inline)
 			}
 
-			s.ArrayItems.Required = []string{f.LoaderKey}
+			sl.Required = []string{f.LoaderKey}
 		} else {
-			// matchers e.t.c.
+			// when loader key is absent, we expect a map
 			for _, l := range f.Loader {
 				split := strings.Split(l, ".")
 				name := split[len(split)-1]
@@ -243,8 +271,44 @@ func (f Field) toSchema() *Schema {
 				ref := NewSchema()
 				ref.setRef(l)
 
-				s.ArrayItems.Properties[name] = ref
+				sl.Properties[name] = ref
 			}
+		}
+
+		// hack to determine the module loader type
+		var tField Field
+		tField.populate(reflect.Zero(f.LoaderType).Interface())
+		loaderSchema := tField.toSchema()
+		// determine how nested the module loader is
+		var chain []*Schema
+		for cs := loaderSchema; cs.ArrayItems != nil || cs.AdditionalProperties != nil; {
+			chain = append(chain, cs)
+			if cs.ArrayItems != nil {
+				cs = cs.ArrayItems
+			} else if cs.AdditionalProperties != nil {
+				cs = cs.AdditionalProperties
+			}
+		}
+
+		switch len(chain) {
+		case 1:
+			// module
+			s.setType("object")
+			s = sl
+		case 2:
+			if f.LoaderKey == "" {
+				// moduleMap
+				s.setType("object")
+				s = sl
+			} else {
+				// []module
+				s.setType("array")
+				s.ArrayItems = sl
+			}
+		case 3:
+			// []moduleMap
+			s.setType("array")
+			s.ArrayItems = sl
 		}
 	}
 
@@ -280,6 +344,7 @@ func (f Field) toSchema() *Schema {
 
 	// now we're certain of the type
 	s.Description = f.description(s.Type)
+	s.MarkdownDescription = f.description(s.Type)
 	return s
 }
 
@@ -345,13 +410,18 @@ func (f *Field) populateStruct(t reflect.Type) {
 			namespace = strings.TrimPrefix(namespace, "namespace=")
 			// use namespace as module
 			field.Module = namespace
+			field.LoaderType = ff.Type
 
 			if len(split) > 1 {
 				field.LoaderKey = strings.TrimPrefix(split[1], "inline_key=")
 			}
 
 			for key := range moduleMap[namespace] {
-				field.Loader = append(field.Loader, namespace+"."+key)
+				modulePath := key
+				if namespace != "" {
+					modulePath = namespace + "." + key
+				}
+				field.Loader = append(field.Loader, modulePath)
 			}
 		} else {
 			vf := reflect.Zero(ff.Type)
