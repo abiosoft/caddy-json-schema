@@ -99,7 +99,7 @@
         "logs": {
             "mylog": {
                 "encoder": {
-                    "format": "json"
+                    "format": "logfmt"
                 }
             }
         }

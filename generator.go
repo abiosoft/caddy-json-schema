@@ -38,18 +38,18 @@ func cmdSchema(fs caddycmd.Flags) (int, error) {
 	// 	return 1, err
 	// }
 
-	if err := getAllModules(); err != nil {
+	if err := generateSchema(); err != nil {
 		return 1, err
 	}
 
-	if err := generateSchema(); err != nil {
+	if err := writeSchema(); err != nil {
 		return 1, err
 	}
 
 	return 0, nil
 }
 
-func getAllModules() error {
+func generateSchema() error {
 	for _, mod := range caddy.Modules() {
 		split := strings.Split(mod, ".")
 
@@ -123,7 +123,7 @@ func getAllModules() error {
 	return nil
 }
 
-func generateSchema() error {
+func writeSchema() error {
 	f, err := os.OpenFile("schema.json", os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0755)
 	if err != nil {
 		return err
