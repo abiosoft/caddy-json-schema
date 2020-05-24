@@ -120,21 +120,6 @@ func getAllModules() error {
 		globalSchema.AdditionalItems = true
 	}
 
-	{
-		// topLevel apps
-		// globalSchema.AdditionalItems = true
-		// apps := NewSchema()
-		// apps.Description = caddyDoc.Structure.Doc
-		// apps.MarkdownDescription = caddyDoc.Structure.Doc
-		// for modName := range moduleMap[""] {
-		// 	s := NewSchema()
-		// 	s.setRef(modName)
-		// 	apps.Properties[modName] = s
-		// }
-		// globalSchema.Properties["apps"] = apps
-		// globalSchema.Required = []string{"apps"}
-	}
-
 	return nil
 }
 
@@ -161,17 +146,19 @@ func generateSchema() error {
 type Field struct {
 	// keep track of the current module
 	Module string
-	Doc    *DocStruct
 
+	// website api doc
+	Doc *DocStruct
+
+	// field properties
 	Name   string
 	Fields []Field
 	Type   string
 
+	// array/map type
 	Array bool
 	Map   bool
-
-	// array/map type
-	Nest *Field
+	Nest  *Field
 
 	// Module loaders
 	Loader     []string // list of modules
@@ -204,6 +191,9 @@ func (f Field) description(fieldType string) string {
 		}
 	}
 
+	if fieldType == "" {
+		fieldType = "object"
+	}
 	info := fmt.Sprintf("%s: `%s`  \nModule: `%s`  \n", f.Name, fieldType, f.Module)
 	if f.Module == "" {
 		info = fmt.Sprintf("%s: `%s`  \n", f.Name, fieldType)
@@ -219,7 +209,7 @@ func (f Field) toSchema() *Schema {
 		sl := NewSchema()
 
 		if f.LoaderKey != "" {
-			// when loader key is set, we expect an array.
+			// when loader key is set, we expect a []module.
 			// combine {if, then} to improve suggestions.
 			names := []string{}
 			for _, l := range f.Loader {
@@ -263,7 +253,7 @@ func (f Field) toSchema() *Schema {
 
 			sl.Required = []string{f.LoaderKey}
 		} else {
-			// when loader key is absent, we expect a map
+			// when loader key is absent, we expect a map[string]module
 			for _, l := range f.Loader {
 				split := strings.Split(l, ".")
 				name := split[len(split)-1]
@@ -276,42 +266,48 @@ func (f Field) toSchema() *Schema {
 		}
 
 		// hack to determine the module loader type
-		var tField Field
-		tField.populate(reflect.Zero(f.LoaderType).Interface())
-		loaderSchema := tField.toSchema()
-		// determine how nested the module loader is
-		var chain []*Schema
-		for cs := loaderSchema; cs.ArrayItems != nil || cs.AdditionalProperties != nil; {
-			chain = append(chain, cs)
-			if cs.ArrayItems != nil {
-				cs = cs.ArrayItems
-			} else if cs.AdditionalProperties != nil {
-				cs = cs.AdditionalProperties
-			}
-		}
+		{
+			// generate schema
+			var tField Field
+			tField.populate(reflect.Zero(f.LoaderType).Interface())
+			loaderSchema := tField.toSchema()
 
-		switch len(chain) {
-		case 1:
-			// module
-			s.setType("object")
-			s = sl
-		case 2:
-			if f.LoaderKey == "" {
-				// moduleMap
+			// determine how nested the module loader is
+			var nest int
+			for cs := loaderSchema; cs.ArrayItems != nil || cs.AdditionalProperties != nil; nest++ {
+				if cs.ArrayItems != nil {
+					cs = cs.ArrayItems
+				} else if cs.AdditionalProperties != nil {
+					cs = cs.AdditionalProperties
+				}
+			}
+
+			// derive from the nesting the structure of the module loader
+			// TODO: use a different approach to improve readability
+			switch nest {
+			case 1:
+				// module
 				s.setType("object")
 				s = sl
-			} else {
-				// []module
+			case 2:
+				if f.LoaderKey == "" {
+					// map[string]module
+					s.setType("object")
+					s = sl
+				} else {
+					// []module
+					s.setType("array")
+					s.ArrayItems = sl
+				}
+			case 3:
+				// []map[string]module
 				s.setType("array")
 				s.ArrayItems = sl
 			}
-		case 3:
-			// []moduleMap
-			s.setType("array")
-			s.ArrayItems = sl
 		}
 	}
 
+	// struct fields
 	for _, field := range f.Fields {
 		s.Properties[field.Name] = field.toSchema()
 	}
