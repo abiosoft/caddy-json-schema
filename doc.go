@@ -3,7 +3,6 @@ package jsonschema
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -11,19 +10,24 @@ import (
 	"github.com/caddyserver/caddy/v2"
 )
 
-func loadJSONDoc() error {
-	// app
-	b, err := fetchDocJSON("")
+func loadConfigJSONDoc() error {
+	b, err := fetchConfigDocJSON("")
 	if err != nil {
 		return err
 	}
 	if err := json.Unmarshal(b, &caddyDoc); err != nil {
 		return err
 	}
+	return nil
+}
+
+func populateJSONDocModules() error {
+	// website json doc has repeated modules
+	// prevent cycle
+	visited := map[string]struct{}{}
 
 	// top level namespaces
-	visited := map[string]struct{}{}
-	for i, namespace := range caddyDoc.Namespaces[""] {
+	for _, namespace := range caddyDoc.Namespaces[""] {
 		b, err := fetchDocJSON(namespace.Name)
 		if err != nil {
 			return err
@@ -32,11 +36,15 @@ func loadJSONDoc() error {
 		if err := json.Unmarshal(b, &tmp); err != nil {
 			return err
 		}
-		namespace.Structure = tmp.Structure
-		caddyDoc.Namespaces[""][i] = namespace
 
+		flatCaddyDocMap[namespace.Name] = &tmp
+
+		// sub namespaces
 		for ns, list := range tmp.Namespaces {
-			names := []string{}
+			if ns == "" {
+				// avoid top level
+				continue
+			}
 			for _, m := range list {
 				modulePath := m.Name
 				if ns != "" {
@@ -49,16 +57,47 @@ func loadJSONDoc() error {
 				// mark visited
 				visited[modulePath] = struct{}{}
 
-				names = append(names, modulePath)
-				if m.Structure == nil {
-					m.Structure = &DocStruct{
-						Doc: m.Docs,
-					}
-				}
-				caddyDoc.Namespaces[ns] = append(caddyDoc.Namespaces[ns], m)
+				flatCaddyDocMap[modulePath] = nil
 			}
-			log.Println(names)
 		}
+
+	}
+	return nil
+}
+
+// fetchJSONModuleDocs fetches docs for all available modules.
+func fetchJSONModuleDocs() error {
+	for ns, doc := range flatCaddyDocMap {
+		if doc != nil {
+			continue
+		}
+
+		b, err := fetchDocJSON(ns)
+		if err != nil {
+			return err
+		}
+		var tmp CaddyDoc
+		if err := json.Unmarshal(b, &tmp); err != nil {
+			return err
+		}
+
+		flatCaddyDocMap[ns] = &tmp
+	}
+
+	return nil
+}
+
+func loadJSONDoc() error {
+	if err := loadConfigJSONDoc(); err != nil {
+		return err
+	}
+
+	if err := populateJSONDocModules(); err != nil {
+		return err
+	}
+
+	if err := fetchJSONModuleDocs(); err != nil {
+		return err
 	}
 
 	return nil
@@ -98,6 +137,7 @@ type DocNamespace map[string][]struct {
 }
 
 var caddyDoc CaddyDoc
+var flatCaddyDocMap = map[string]*CaddyDoc{}
 
 func cacheFile(namespace string) (string, error) {
 	fileName := "docs.json"
@@ -109,8 +149,12 @@ func cacheFile(namespace string) (string, error) {
 }
 
 func fetchDocJSON(namespace string) ([]byte, error) {
+	return fetchConfigDocJSON("apps/" + namespace)
+}
+
+func fetchConfigDocJSON(config string) ([]byte, error) {
 	// try local cache first
-	cache, err := cacheFile(namespace)
+	cache, err := cacheFile(config)
 	if err == nil {
 		b, err := ioutil.ReadFile(cache)
 		if err == nil {
@@ -118,7 +162,7 @@ func fetchDocJSON(namespace string) ([]byte, error) {
 		}
 	}
 
-	apiURL := "https://caddyserver.com/api/docs/config/apps/" + namespace
+	apiURL := "https://caddyserver.com/api/docs/config/" + config
 	resp, err := http.Get(apiURL)
 	if err != nil {
 		return nil, err

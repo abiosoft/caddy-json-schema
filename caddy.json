@@ -1,105 +1,37 @@
 {
+    "logging": {
+        "sink": {}
+    },
+    "admin": {
+        "disabled": true
+    },
     "apps": {
         "http": {
             "servers": {
                 "myserver": {
                     "routes": [
                         {
+                            "handle": [
+                                {
+                                    "handler": "file_server",
+                                    "browse": {
+                                        "template_file": "file.html"
+                                    }
+                                }
+                            ],
+                            "terminal": true,
                             "match": [
                                 {
-                                    "path": [
-                                        "/users"
-                                    ],
-                                    "header": {
-                                        "X-Header": [
-                                            "soemthing"
-                                        ]
-                                    },
-                                    "host": []
-                                },
-                                {
                                     "host": [
-                                        "me.com"
+                                        "localhost"
                                     ],
                                     "file": {
                                         "root": ""
                                     }
                                 }
-                            ],
-                            "handle": [
-                                {
-                                    "handler": "subroute",
-                                    "routes": [
-                                        {
-                                            "handle": [
-                                                {
-                                                    "handler": "file_server",
-                                                    "hide": [
-                                                        "Caddyfile"
-                                                    ],
-                                                    "browse": {
-                                                        "template_file": "file.html"
-                                                    }
-                                                },
-                                                {
-                                                    "handler": "json_parse",
-                                                    "strict": false
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                {
-                                    "handler": "file_server",
-                                    "root": ""
-                                }
                             ]
                         }
                     ]
-                },
-                "another": {
-                    "automatic_https": {
-                        "disable": true
-                    },
-                    "listen": [
-                        ":8080"
-                    ],
-                    "routes": [
-                        {
-                            "handle": [
-                                {
-                                    "handler": "json_parse",
-                                    "strict": true
-                                }
-                            ]
-                        }
-                    ]
-                }
-            }
-        },
-        "exec": {
-            "commands": [
-                {
-                    "command": "echo",
-                    "args": [
-                        "Hello world"
-                    ],
-                    "foreground": true
-                }
-            ]
-        }
-    },
-    "admin": {
-        "listen": "",
-        "config": {
-            "persist": false
-        }
-    },
-    "logging": {
-        "logs": {
-            "mylog": {
-                "encoder": {
-                    "format": "logfmt"
                 }
             }
         }
