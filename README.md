@@ -38,7 +38,7 @@ flags:
 
 ### Visual Studio Code
 
-`caddy json-schema --vscode` generates Visual Studio configuration in the current directory.
+`caddy json-schema --vscode` generates Visual Studio Code configuration in the current directory.
 
 Open the directory in Visual Studio Code and it should just work. 
 Ensure the config filename is of the format `*caddy*.json`.
