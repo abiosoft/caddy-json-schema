@@ -1,9 +1,43 @@
 {
     "logging": {
-        "sink": {}
+        "sink": {
+            "writer": {
+                "output": "file",
+                "filename": ""
+            }
+        },
+        "logs": {
+            "mylog": {
+                "writer": {
+                    "output": "file",
+                    "filename": ""
+                },
+                "encoder": {
+                    "format": "json",
+                    "message_key": ""
+                },
+                "sampling": {
+                    "first": 0
+                }
+            },
+            "another": {
+                "writer": {
+                    "output": "net",
+                    "address": ""
+                },
+                "encoder": {
+                    "format": "logfmt",
+                    "time_format": ""
+                }
+            }
+        }
     },
     "admin": {
-        "disabled": true
+        "disabled": true,
+        "config": {
+            "persist": true
+        },
+        "origins": []
     },
     "apps": {
         "http": {

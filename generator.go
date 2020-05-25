@@ -125,38 +125,64 @@ func addDocToSchema(s *Schema, doc *DocStruct) {
 		return
 	}
 
-	// if missing, parent may have set the doc
+	desc := func(description, pkg, doc string) string {
+		pkg = godocLink(pkg)
+		desc := ""
+		for _, d := range []string{description, pkg, doc} {
+			if d != "" {
+				desc += d + "\n"
+			}
+		}
+		return desc
+	}
+	mdDesc := func(description, pkg, doc string) string {
+		pkg = markdownLink("godoc", godocLink(pkg))
+		desc := ""
+		for _, d := range []string{description, pkg, doc} {
+			if strings.TrimSpace(d) != "" {
+				desc += d + "  \n"
+			}
+		}
+		return desc
+	}
+	setDesc := func(s *Schema, d *DocStruct) {
+		s.Description = desc(s.description, d.Package, d.Doc)
+		s.MarkdownDescription = mdDesc(s.markdownDescription, d.Package, d.Doc)
+	}
+
+	// set only if non-empty, parent may have set the doc if empty
 	if doc.Doc != "" {
-		s.Description += "\n" + doc.Doc
-		s.MarkdownDescription += "  \n" + doc.Doc
+		setDesc(s, doc)
 	}
 
 	switch doc.Type {
 	case "struct":
 		for i, field := range doc.StructFields {
 			if _, ok := s.Properties[field.Key]; ok {
+				// if field has no doc, use parent doc.
 				if field.Value.Doc == "" {
-					s.Properties[field.Key].Description += "\n" + doc.Doc
-					s.Properties[field.Key].MarkdownDescription += "  \n" + doc.Doc
+					setDesc(s.Properties[field.Key], field)
 				}
 				addDocToSchema(s.Properties[field.Key], doc.StructFields[i].Value)
 			}
 		}
 	case "array":
 		if s.ArrayItems != nil && doc.Elems != nil {
+			if doc.Elems.Doc != "" {
+				setDesc(s, doc.Elems) // use items doc for parent
+			}
 			addDocToSchema(s.ArrayItems, doc.Elems)
 		}
 	case "map":
 		if s.AdditionalProperties != nil && doc.Elems != nil {
-			// use same doc for parent
-			// s.Description += "\n" + doc.Doc
-			// s.MarkdownDescription += "  \n" + doc.Doc
-
+			if doc.Elems.Doc != "" {
+				setDesc(s, doc.Elems) // use items doc for parent
+			}
 			addDocToSchema(s.AdditionalProperties, doc.Elems)
 		}
 	default:
 		// everything else has no nesting
-		// do nothing/terminate	a
+		// do nothing/terminate
 	}
 
 }
@@ -182,9 +208,6 @@ type Field struct {
 	// keep track of the current module
 	Module string
 
-	// website api doc
-	Doc *DocStruct
-
 	// field properties
 	Name   string
 	Fields []Field
@@ -201,39 +224,25 @@ type Field struct {
 	LoaderType reflect.Type
 }
 
-func (f Field) description(fieldType string) string {
-	doc := ""
-	if f.Doc != nil {
-		doc = f.Doc.Doc
-	}
-
+func (f Field) goPkg() string {
 	typ := reflect.TypeOf(flatModuleMap[f.Module].Type)
-	if typ != nil {
-		if typ.Kind() == reflect.Ptr {
-			typ = typ.Elem()
-		}
-		// only show link for public fields
-		if typ.Name() != "" {
-			c := rune(typ.Name()[0])
-			if unicode.IsUpper(c) && unicode.IsLetter(c) {
-				godoc := fmt.Sprintf("[godoc](https://pkg.go.dev/%s#%s)", typ.PkgPath(), typ.Name())
-				if doc != "" {
-					doc = godoc + "\n\n" + doc
-				} else {
-					doc = godoc
-				}
-			}
+	if typ == nil {
+		return ""
+	}
+
+	if typ.Kind() == reflect.Ptr {
+		typ = typ.Elem()
+	}
+
+	// only return godoc for public fields
+	if typ.Name() != "" {
+		c := rune(typ.Name()[0])
+		if unicode.IsUpper(c) && unicode.IsLetter(c) {
+			return typ.PkgPath() + "." + typ.Name()
 		}
 	}
 
-	if fieldType == "" {
-		fieldType = "object"
-	}
-	info := fmt.Sprintf("%s: `%s`  \nModule: `%s`  \n", f.Name, fieldType, f.Module)
-	if f.Module == "" {
-		info = fmt.Sprintf("%s: `%s`  \n", f.Name, fieldType)
-	}
-	return info + doc
+	return ""
 }
 
 func (f Field) toSchema() *Schema {
@@ -278,9 +287,13 @@ func (f Field) toSchema() *Schema {
 				tmp := NewSchema()
 				tmp.setType("string")
 				tmp.Enum = names
-				desc := "`%s` key to identify specified module.  \n%s: `string`  \nModule: `%s`"
+
+				// No way to generate docs for this yet.
+				// TODO: make it reflect the current handler.
+				desc := "key to identify %s module.\n%s: string\nModule: %s"
+				mdDesc := "key to identify `%s` module.  \n%s: `string`  \nModule: `%s`"
 				tmp.Description = fmt.Sprintf(desc, f.Name, f.LoaderKey, f.Module)
-				tmp.MarkdownDescription = tmp.Description
+				tmp.MarkdownDescription = fmt.Sprintf(mdDesc, f.Name, f.LoaderKey, f.Module)
 
 				inline.Properties[f.LoaderKey] = tmp
 				sl.AllOf = append(sl.AllOf, inline)
@@ -374,8 +387,18 @@ func (f Field) toSchema() *Schema {
 	}
 
 	// now we're certain of the type
-	s.Description = f.description(s.Type)
-	s.MarkdownDescription = f.description(s.Type)
+	s.description = description(f.Name, s.Type, f.Module)
+	s.markdownDescription = markdownDescription(f.Name, s.Type, f.Module)
+	s.goPkg = f.goPkg()
+
+	// set the description in case JSON api docs not available
+	// e.g. third party modules
+	s.Description = s.description + "\n" + godocLink(s.goPkg)
+	s.MarkdownDescription = s.markdownDescription + "  \n" + markdownLink("godoc", godocLink(s.goPkg))
+	if s.goPkg == "" {
+		s.Description = s.description
+		s.MarkdownDescription = s.markdownDescription
+	}
 	return s
 }
 

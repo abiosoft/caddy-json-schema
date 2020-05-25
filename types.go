@@ -1,5 +1,10 @@
 package jsonschema
 
+import (
+	"fmt"
+	"strings"
+)
+
 // Module ...
 type Module struct {
 	Name string      `json:"name,omitempty"`
@@ -38,6 +43,50 @@ type Schema struct {
 	Else *Schema `json:"else,omitempty"`
 
 	Const string `json:"const,omitempty"`
+
+	// internal use for docs generation
+	goPkg               string
+	description         string
+	markdownDescription string
+}
+
+func godocLink(pkg string) string {
+	if pkg == "" {
+		return ""
+	}
+
+	// api json docs uses dot for typename
+	if i := strings.LastIndex(pkg, "."); i >= 0 {
+		pkg = pkg[:i] + "#" + pkg[i+1:]
+	}
+	return "https://pkg.go.dev/" + pkg
+}
+func markdownLink(title, link string) string {
+	if link == "" {
+		return ""
+	}
+	return fmt.Sprintf("[%s](%s)", title, link)
+}
+func description(typeName, fieldType, module string) string {
+	if fieldType == "" {
+		fieldType = "object"
+	}
+	info := fmt.Sprintf("%s: %s\nModule: %s", typeName, fieldType, module)
+	if module == "" {
+		info = fmt.Sprintf("%s: %s", typeName, fieldType)
+	}
+	return info
+}
+
+func markdownDescription(typeName, fieldType, module string) string {
+	if fieldType == "" {
+		fieldType = "object"
+	}
+	info := fmt.Sprintf("%s: `%s`  \nModule: `%s`", typeName, fieldType, module)
+	if module == "" {
+		info = fmt.Sprintf("%s: `%s`", typeName, fieldType)
+	}
+	return info
 }
 
 func getType(typ string) string {
