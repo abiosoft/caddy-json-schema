@@ -2,23 +2,31 @@ package jsonschema
 
 import (
 	"flag"
+	stdlog "log"
+	"os"
 
 	"github.com/caddyserver/caddy/v2"
 	caddycmd "github.com/caddyserver/caddy/v2/cmd"
 )
 
-var config = struct {
-	File   string
-	VsCode bool
-	Indent int
-}{
-	File:   "./caddy_schema.json",
-	Indent: 2,
-}
+const commandName = "json-schema"
+
+var (
+	config = struct {
+		File   string
+		VsCode bool
+		Indent int
+	}{
+		File:   "./caddy_schema.json",
+		Indent: 2,
+	}
+
+	log = stdlog.New(os.Stderr, commandName+" ", 0)
+)
 
 func init() {
 	caddycmd.RegisterCommand(caddycmd.Command{
-		Name:  "json-schema",
+		Name:  commandName,
 		Func:  run,
 		Usage: "[--output <file>] [--vscode] [--indent <int>]",
 		Short: "Generate JSON schema for Caddy JSON api",

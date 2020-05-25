@@ -29,18 +29,13 @@ func writeToFile(w schemaWriter) error {
 	return w.Write()
 }
 
+var _ schemaWriter = (*vscodeWriter)(nil)
+var _ schemaWriter = (*basicWriter)(nil)
+
 type schemaWriter interface {
 	Prepare() error
 	Write() error
 }
-
-type file struct {
-	filename string
-	perm     os.FileMode
-	exists   bool
-}
-
-var _ schemaWriter = (*vscodeWriter)(nil)
 
 type basicWriter struct{}
 
@@ -49,9 +44,17 @@ func (b basicWriter) Write() error {
 	return jsonToFile(rootSchema, config.File, filePerm)
 }
 
+type file struct {
+	filename string
+	perm     os.FileMode
+	exists   bool
+}
+
 type vscodeWriter struct {
 	dir, config, schema file
 	configJSON          map[string]interface{}
+
+	ignoreConfig bool
 }
 
 func (v *vscodeWriter) prepareDirectory() error {
@@ -131,9 +134,19 @@ func (v *vscodeWriter) setVsConfig() error {
 	var schemas []interface{}
 	if s := v.configJSON[key]; s != nil {
 		if _, ok := s.([]interface{}); !ok {
-			return errors.New("invalid vscode config, 'json.schemas' not an list")
+			return errors.New("invalid vscode config, 'json.schemas' not a list")
 		}
 		schemas = s.([]interface{})
+	}
+
+	for _, schema := range schemas {
+		if s, ok := schema.(map[string]interface{}); ok {
+			if url, ok := s["url"]; ok && url == v.schema.filename {
+				log.Println("vscode config found, ignoring...")
+				v.ignoreConfig = true
+				return nil
+			}
+		}
 	}
 
 	schemas = append(schemas, M{
@@ -151,7 +164,11 @@ func (v *vscodeWriter) Write() error {
 		return err
 	}
 
-	return jsonToFile(v.configJSON, v.config.filename, v.config.perm)
+	if !v.ignoreConfig {
+		return jsonToFile(v.configJSON, v.config.filename, v.config.perm)
+	}
+
+	return nil
 }
 
 // jsonToFile writes JSON obj to file.
@@ -171,7 +188,12 @@ func jsonToFile(obj interface{}, filename string, perm os.FileMode) error {
 
 	// var err error
 	err = encoder.Encode(obj)
-	return err
+	if err != nil {
+		return err
+	}
+
+	log.Println(filename, "written.")
+	return nil
 }
 
 func permOrDefault(filename string) (os.FileMode, bool, error) {

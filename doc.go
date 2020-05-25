@@ -4,18 +4,25 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
+
+	"github.com/caddyserver/caddy/v2"
 )
 
 func loadDoc() error {
 	if err := loadRootDoc(); err != nil {
+		log.Println("catch you")
 		return err
 	}
 
 	if err := fetchAllDocumentedModules(); err != nil {
+		log.Println("catch you too")
 		return err
 	}
 
 	if err := fetchAllModuleDocs(); err != nil {
+		log.Println("catch you three")
 		return err
 	}
 
@@ -119,6 +126,10 @@ func fetchConfigDoc(config string) ([]byte, error) {
 	}
 
 	apiURL := "https://caddyserver.com/api/docs/config/" + config
+
+	log.Println("cached docs not found for", config+".")
+	log.Println("fetching", apiURL, "...")
+
 	resp, err := http.Get(apiURL)
 	if err != nil {
 		return nil, err
@@ -132,5 +143,17 @@ func fetchConfigDoc(config string) ([]byte, error) {
 	// cache file
 	defer ioutil.WriteFile(cache, b, 0600)
 
+	log.Println()
 	return b, nil
+}
+
+// cacheFile returns the filesystem path to cached API doc
+// for namespace
+func cacheFile(namespace string) (string, error) {
+	fileName := "docs.json"
+	dir := filepath.Join(caddy.AppDataDir(), "json_schema", namespace)
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		return "", err
+	}
+	return filepath.Join(dir, fileName), nil
 }

@@ -1,12 +1,5 @@
 package jsonschema
 
-import (
-	"os"
-	"path/filepath"
-
-	"github.com/caddyserver/caddy/v2"
-)
-
 // moduleMap is map of namespaces to namespace modules.
 // It is used by module loaders to identify modules in namespace.
 var moduleMap = map[string]Modules{}
@@ -33,7 +26,7 @@ var rootDocAPIResp DocAPIResp
 
 // flatCaddyDocMap is a flat map of module path to API response
 // without nesting.
-// It is used during schema generation to fetch module docs.
+// It is used during schema generation to retrieve module docs.
 var flatCaddyDocMap = map[string]*DocAPIResp{}
 
 // DocStruct is the API response structure for a type.
@@ -67,15 +60,4 @@ type DocNamespace map[string][]struct {
 	Docs string `json:"docs,omitempty"`
 
 	Structure *DocStruct `json:"-"`
-}
-
-// cacheFile returns the filesystem path to cached API doc
-// for namespace
-func cacheFile(namespace string) (string, error) {
-	fileName := "docs.json"
-	dir := filepath.Join(caddy.AppDataDir(), "json_schema", namespace)
-	if err := os.MkdirAll(dir, 0700); err != nil {
-		return "", err
-	}
-	return filepath.Join(dir, fileName), nil
 }

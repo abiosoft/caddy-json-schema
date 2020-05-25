@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strings"
 	"unicode"
+
+	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 )
 
 // Interface is a Go type representing a Caddy module structure
@@ -155,9 +157,19 @@ func (f *Interface) populateStruct(t reflect.Type) {
 		return
 	}
 
+	// rootLoaders are special type of module loaders where
+	// module loading happens on the struct directly but not the
+	// struct fields. Currently only applies to caddyhttp.MatchNot
+	rootLoader := t == reflect.TypeOf(caddyhttp.MatchNot{})
+
 	for _, ff := range allFields(t) {
 		jsonTag, ok := ff.Tag.Lookup("json")
-		if !ok || jsonTag == "-" {
+
+		if _, ok := ff.Tag.Lookup("caddy"); !ok {
+			rootLoader = false // discard if missing struct tag
+		}
+
+		if (!ok || jsonTag == "-") && !rootLoader {
 			continue
 		}
 
@@ -167,28 +179,41 @@ func (f *Interface) populateStruct(t reflect.Type) {
 		}
 
 		caddyTag, ok := ff.Tag.Lookup("caddy")
-		if ok {
-			split := strings.Fields(caddyTag)
-			namespace := split[0] // 1 is inline_key
-			namespace = strings.TrimPrefix(namespace, "namespace=")
-			// use namespace as module
-			field.Module = namespace
-			field.LoaderType = ff.Type
+		if !ok {
+			// regular fields
+			field.populate(reflect.Zero(ff.Type).Interface())
+			f.Fields = append(f.Fields, field)
+			continue
+		}
 
-			if len(split) > 1 {
-				field.LoaderKey = strings.TrimPrefix(split[1], "inline_key=")
-			}
+		// module loader fields
+		split := strings.Fields(caddyTag)
+		namespace := split[0] // 1 is inline_key
+		namespace = strings.TrimPrefix(namespace, "namespace=")
 
-			for key := range moduleMap[namespace] {
-				modulePath := key
-				if namespace != "" {
-					modulePath = namespace + "." + key
-				}
-				field.Loader = append(field.Loader, modulePath)
+		if len(split) > 1 {
+			field.LoaderKey = strings.TrimPrefix(split[1], "inline_key=")
+		}
+
+		field.Module = namespace // use namespace as module
+		field.LoaderType = ff.Type
+
+		for key := range moduleMap[namespace] {
+			modulePath := key
+			if namespace != "" {
+				modulePath = namespace + "." + key
 			}
-		} else {
-			vf := reflect.Zero(ff.Type)
-			field.populate(vf.Interface())
+			field.Loader = append(field.Loader, modulePath)
+		}
+
+		if rootLoader {
+			// delegate loading to parent struct
+			// discard all fields
+			f.Fields = nil
+			f.Loader = field.Loader
+			f.LoaderType = field.LoaderType
+			f.LoaderKey = field.LoaderKey
+			return
 		}
 
 		f.Fields = append(f.Fields, field)
