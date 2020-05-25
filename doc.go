@@ -127,7 +127,11 @@ func fetchConfigDoc(config string) ([]byte, error) {
 
 	apiURL := "https://caddyserver.com/api/docs/config/" + config
 
-	log.Println("cached docs not found for", config+".")
+	label := config
+	if config == "" {
+		label = "root config"
+	}
+	log.Println("cached docs not found for", label+".")
 	log.Println("fetching", apiURL, "...")
 
 	resp, err := http.Get(apiURL)
