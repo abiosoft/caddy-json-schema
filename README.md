@@ -1,8 +1,10 @@
 # caddy-json-schema
 
-JSON schema generator for Caddy v2 .
+JSON schema generator for Caddy v2.
 
-The generated schema can be integrated with editors for intellisense and better experience with configuration and plugin development
+The generated schema can be integrated with editors for intellisense and better experience with configuration and plugin development.
+
+![Demonstration](https://github.com/abiosoft/caddy-json-schema/blob/master/gif/schema.gif)
 
 ## Installation
 
@@ -17,7 +19,7 @@ xcaddy build v2.0.0 \
 
 ## Usage
 
-Run `caddy help json-schema` to view documentation.
+Run `caddy help json-schema` to view help.
 
 ```
 usage:
@@ -66,7 +68,7 @@ Below is a config for [coc-json](https://github.com/neoclide/coc-json). The `url
 | Modules | Intellisense | Documentation |
 |---------|--------------|---------------|
 | Standard| Supported | Supported |
-| Third Party| Supported | In Progress |
+| Third Party| Supported | Planned |
 
 ## License
 
