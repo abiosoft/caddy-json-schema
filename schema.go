@@ -5,20 +5,22 @@ import (
 	"strings"
 )
 
-// Module ...
-type Module struct {
-	Name string      `json:"name,omitempty"`
-	Type interface{} `json:"-"`
-	Field
+// rootSchema is the root schema where all sub schemas are added to.
+// This holds the root `Config` structure of Caddy JSON config.
+var rootSchema = NewSchema()
+
+// NewSchema creates a new Schema. It's primarily for the
+// convenience of initiating struct maps.
+func NewSchema() *Schema {
+	return &Schema{
+		Definitions: make(map[string]*Schema),
+		Properties:  make(map[string]*Schema),
+	}
 }
 
-// Modules ...
-type Modules map[string]Module
-
-var moduleMap = map[string]Modules{}
-var flatModuleMap = Modules{}
-
-// Schema ...
+// Schema is a structure for JSON schema.
+// JSON encoding of a Schema gives a valid JSON schema.
+// http://json-schema.org
 type Schema struct {
 	Title               string `json:"title,omitempty"`
 	Description         string `json:"description,omitempty"`
@@ -61,12 +63,14 @@ func godocLink(pkg string) string {
 	}
 	return "https://pkg.go.dev/" + pkg
 }
+
 func markdownLink(title, link string) string {
 	if link == "" {
 		return ""
 	}
 	return fmt.Sprintf("[%s](%s)", title, link)
 }
+
 func description(typeName, fieldType, module string) string {
 	if fieldType == "" {
 		fieldType = "object"
@@ -111,14 +115,4 @@ func (s *Schema) setType(typ string) {
 
 func (s *Schema) setRef(moduleID string) {
 	s.Ref = "#/definitions/" + moduleID
-}
-
-var globalSchema = NewSchema()
-
-// NewSchema ...
-func NewSchema() *Schema {
-	return &Schema{
-		Definitions: make(map[string]*Schema),
-		Properties:  make(map[string]*Schema),
-	}
 }
