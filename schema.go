@@ -73,7 +73,7 @@ func markdownLink(title, link string) string {
 
 func description(typeName, fieldType, module string) string {
 	if fieldType == "" {
-		fieldType = "object"
+		fieldType = "any"
 	}
 	info := fmt.Sprintf("%s: %s\nModule: %s", typeName, fieldType, module)
 	if module == "" {
@@ -84,7 +84,7 @@ func description(typeName, fieldType, module string) string {
 
 func markdownDescription(typeName, fieldType, module string) string {
 	if fieldType == "" {
-		fieldType = "object"
+		fieldType = "any"
 	}
 	info := fmt.Sprintf("%s: `%s`  \nModule: `%s`", typeName, fieldType, module)
 	if module == "" {
@@ -100,10 +100,12 @@ func getType(typ string) string {
 	case "int", "int8", "int16", "int32", "int64",
 		"uint", "uint8", "uint16", "uint32", "uint64":
 		return "number"
-	case "string":
-		return "string"
-	case "slice", "array":
+	case "slice":
 		return "array"
+	case "any", "":
+		return ""
+	case "string", "array": // no transformation needed
+		return typ
 	}
 
 	return "object"
