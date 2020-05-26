@@ -43,11 +43,8 @@ func (f Interface) goPkg() string {
 	}
 
 	// only return godoc for public fields
-	if typ.Name() != "" {
-		c := rune(typ.Name()[0])
-		if unicode.IsUpper(c) && unicode.IsLetter(c) {
-			return typ.PkgPath() + "." + typ.Name()
-		}
+	if isPublic(typ.Name()) {
+		return typ.PkgPath() + "." + typ.Name()
 	}
 
 	return ""
@@ -162,7 +159,12 @@ func (f *Interface) populateStruct(t reflect.Type) {
 	// struct fields. Currently only applies to caddyhttp.MatchNot
 	rootLoader := t == reflect.TypeOf(caddyhttp.MatchNot{})
 
+	publicFields := []reflect.StructField{}
 	for _, ff := range allFields(t) {
+		if isPublic(ff.Name) {
+			publicFields = append(publicFields, ff)
+		}
+
 		jsonTag, ok := ff.Tag.Lookup("json")
 
 		if _, ok := ff.Tag.Lookup("caddy"); !ok {
@@ -219,6 +221,24 @@ func (f *Interface) populateStruct(t reflect.Type) {
 		f.Fields = append(f.Fields, field)
 	}
 
+	// for structs with custom unmarshalling and no json tagged fields.
+	// if there's only one public field, assume the type of the field.
+	// TODO: decide if this is necessary or simply leave as any.
+	if len(f.Fields) == 0 && len(publicFields) == 1 {
+		tmp := Interface{}
+		tmp.populate(reflect.Zero(publicFields[0].Type).Interface())
+		f.Type = tmp.Type
+	}
+
+}
+
+func isPublic(fieldName string) bool {
+	if fieldName == "" {
+		return false
+	}
+
+	c := rune(fieldName[0])
+	return unicode.IsUpper(c) && unicode.IsLetter(c)
 }
 
 // allFields retrives all struct fields (including nested structs) for a type.
