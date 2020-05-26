@@ -2,6 +2,7 @@ package jsonschema
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -131,7 +132,12 @@ func fetchConfigDoc(config string) ([]byte, error) {
 	if config == "" {
 		label = "root config"
 	}
-	log.Println("cached docs not found for", label+".")
+
+	if err == errCacheDisabled {
+		log.Println("discarding cache for", label+".")
+	} else {
+		log.Println("cached docs not found for", label+".")
+	}
 	log.Println("fetching", apiURL, "...")
 
 	resp, err := http.Get(apiURL)
@@ -151,9 +157,15 @@ func fetchConfigDoc(config string) ([]byte, error) {
 	return b, nil
 }
 
+var errCacheDisabled = errors.New("cache disabled")
+
 // cacheFile returns the filesystem path to cached API doc
 // for namespace
 func cacheFile(namespace string) (string, error) {
+	if config.DiscardCache {
+		return "", errCacheDisabled
+	}
+
 	fileName := "docs.json"
 	dir := filepath.Join(caddy.AppDataDir(), "json_schema", namespace)
 	if err := os.MkdirAll(dir, 0700); err != nil {

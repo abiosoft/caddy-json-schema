@@ -23,15 +23,17 @@ Run `caddy help json-schema` to view help.
 
 ```
 usage:
-  caddy json-schema [--output <file>] [--vscode] [--indent <int>]
+  caddy json-schema [--output <file>] [--indent <int>] [--vscode] [--no-cache]
 
 flags:
   -indent int
         Number of spaces to indent the generated JSON with (default 2)
+  -no-cache
+        Discard local cache and fetch latest API docs
   -output string
         The file to write the generated schema (default "./caddy_schema.json")
   -vscode
-        Generate VSCode configuration 
+        Generate VSCode configuration
 ```
 
 ## Editors

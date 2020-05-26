@@ -13,9 +13,10 @@ const commandName = "json-schema"
 
 var (
 	config = struct {
-		File   string
-		VsCode bool
-		Indent int
+		File         string
+		VsCode       bool
+		Indent       int
+		DiscardCache bool
 	}{
 		File:   "./caddy_schema.json",
 		Indent: 2,
@@ -28,7 +29,7 @@ func init() {
 	caddycmd.RegisterCommand(caddycmd.Command{
 		Name:  commandName,
 		Func:  run,
-		Usage: "[--output <file>] [--vscode] [--indent <int>]",
+		Usage: "[--output <file>] [--indent <int>] [--vscode] [--no-cache]",
 		Short: "Generate JSON schema for Caddy JSON api",
 		Long: `
 JSON schema generator for caddy JSON configuration.
@@ -38,6 +39,9 @@ generated to caddy_schema.json in the current directory.
 
 If --indent is set, the generated JSON files with be indented by n spaces where n is
 the value of '--indent'.
+
+If --no-cache is set, local documentation cache (if present) will be discard and the
+latest API docs will be retrieved from caddyserver.com.
 
 If --vscode is set, schema and vscode config is generated into a '.vscode' directory
 in the current working directory. This disregards '--output'.
@@ -49,6 +53,7 @@ https://code.visualstudio.com/docs/languages/json#_mapping-in-the-user-settings
 			fs.StringVar(&config.File, "output", config.File, "The file to write the generated schema")
 			fs.BoolVar(&config.VsCode, "vscode", config.VsCode, "Generate VSCode configuration")
 			fs.IntVar(&config.Indent, "indent", config.Indent, "Number of spaces to indent the generated JSON with")
+			fs.BoolVar(&config.DiscardCache, "no-cache", config.DiscardCache, "Discard local cache and fetch latest API docs")
 			return fs
 		}(),
 	})
