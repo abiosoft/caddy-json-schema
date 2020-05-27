@@ -129,12 +129,12 @@ func (v *vscodeWriter) loadVsConfig() error {
 	return json.Unmarshal(b, &v.configJSON)
 }
 
-func (v *vscodeWriter) setVsConfig() error {
+func (v *vscodeWriter) setJSONConfig() (bool, error) {
 	const key = "json.schemas"
 	var schemas []interface{}
 	if s := v.configJSON[key]; s != nil {
 		if _, ok := s.([]interface{}); !ok {
-			return errors.New("invalid vscode config, 'json.schemas' not a list")
+			return false, errors.New("invalid vscode config, 'json.schemas' not a list")
 		}
 		schemas = s.([]interface{})
 	}
@@ -142,9 +142,7 @@ func (v *vscodeWriter) setVsConfig() error {
 	for _, schema := range schemas {
 		if s, ok := schema.(map[string]interface{}); ok {
 			if url, ok := s["url"]; ok && url == v.schema.filename {
-				log.Println("vscode config found, ignoring...")
-				v.ignoreConfig = true
-				return nil
+				return false, nil
 			}
 		}
 	}
@@ -155,6 +153,57 @@ func (v *vscodeWriter) setVsConfig() error {
 	})
 
 	v.configJSON[key] = schemas
+	return true, nil
+}
+
+func (v *vscodeWriter) setYAMLConfig() (bool, error) {
+	const key = "yaml.schemas"
+	var schemas map[string]interface{}
+	if s := v.configJSON[key]; s != nil {
+		if _, ok := s.(map[string]interface{}); !ok {
+			return false, errors.New("invalid vscode config, 'yaml.schemas' not an object")
+		}
+		schemas = s.(map[string]interface{})
+	}
+
+	for key := range schemas {
+		if key == v.schema.filename {
+			return false, nil
+		}
+	}
+
+	if schemas == nil {
+		schemas = make(map[string]interface{})
+	}
+	schemas[v.schema.filename] = []interface{}{
+		"*caddy*.yaml",
+		"*caddy*.yml",
+	}
+
+	v.configJSON[key] = schemas
+	return true, nil
+}
+
+func (v *vscodeWriter) setVsConfig() error {
+	var err error
+	edited := struct{ json, yaml bool }{}
+
+	// json
+	edited.json, err = v.setJSONConfig()
+	if err != nil {
+		return err
+	}
+
+	// yaml
+	edited.yaml, err = v.setYAMLConfig()
+	if err != nil {
+		return err
+	}
+
+	if !edited.json && !edited.yaml {
+		v.ignoreConfig = true
+		log.Println("vscode config found, ignoring...")
+	}
 	return nil
 }
 

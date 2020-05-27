@@ -43,13 +43,15 @@ flags:
 `caddy json-schema --vscode` generates Visual Studio Code configuration in the current directory.
 
 Open the directory in Visual Studio Code and it should just work. 
-Ensure the config filename is of the format `*caddy*.json`.
+Ensure the config filename is of the format `*caddy*.[json|yaml]`.
+
+**Note** that you need [vscode-yaml](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) plugin to get similar experience for YAML files.
 
 ### Vim/NeoVim
 
 There are multiple Vim/NeoVim plugins with language server and JSON schema support.
 
-Below is a config for [coc-json](https://github.com/neoclide/coc-json). The `url` is a relative path to the config file being edited.
+Below is a config for [coc-json](https://github.com/neoclide/coc-json) and [coc-yaml](https://github.com/neoclide/coc-yaml). The path to schema file is relative to the config file being edited.
 
 ```json
 {
@@ -60,8 +62,13 @@ Below is a config for [coc-json](https://github.com/neoclide/coc-json). The `url
             ],
             "url": "./caddy_schema.json"
         }
-    ]
-
+    ],
+    "yaml.schemas": {
+        ".vscode/caddy_schema.json": [
+            "*caddy*.yaml",
+            "*caddy*.yml"
+        ]
+    }
 }
 ```
 
