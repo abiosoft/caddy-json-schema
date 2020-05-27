@@ -4,3 +4,4 @@ caddy
 *caddy*.yaml
 *caddy*.yml
 .DS_Store
+examples/

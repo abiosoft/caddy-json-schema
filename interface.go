@@ -221,6 +221,9 @@ func (f *Interface) populateStruct(t reflect.Type) {
 		f.Fields = append(f.Fields, field)
 	}
 
+	// structs maps to object in JSON
+	f.Type = getType("object")
+
 	// for structs with custom unmarshalling and no json tagged fields.
 	// if there's only one public field, assume the type of the field.
 	// TODO: decide if this is necessary or simply leave as any.
