@@ -1,6 +1,7 @@
 package jsonschema
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -26,6 +27,7 @@ type Schema struct {
 	Description         string `json:"description,omitempty"`
 	MarkdownDescription string `json:"markdownDescription,omitempty"`
 	Type                string `json:"type,omitempty"`
+	Nullable            bool   `json:"-"`
 	Ref                 string `json:"$ref,omitempty"`
 
 	ArrayItems           *Schema            `json:"items,omitempty"`
@@ -117,4 +119,19 @@ func (s *Schema) setType(typ string) {
 
 func (s *Schema) setRef(moduleID string) {
 	s.Ref = "#/definitions/" + moduleID
+}
+
+// MarshalJSON allows to marshal Schema.Type as string or list
+func (s *Schema) MarshalJSON() ([]byte, error) {
+	type Alias Schema
+	if s.Nullable {
+		return json.Marshal(&struct {
+			Type [2]string `json:"type"`
+			*Alias
+		}{
+			Type:  [2]string{s.Type, "null"},
+			Alias: (*Alias)(s),
+		})
+	}
+	return json.Marshal(&struct{ *Alias }{Alias: (*Alias)(s)})
 }
