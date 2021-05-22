@@ -16,9 +16,10 @@ type Interface struct {
 	Module string
 
 	// properties
-	Name   string
-	Fields []Interface
-	Type   string
+	Name     string
+	Fields   []Interface
+	Type     string
+	Nullable bool
 
 	// array/map type
 	Array bool
@@ -54,6 +55,7 @@ func (f Interface) goPkg() string {
 func (f Interface) toSchema() *Schema {
 	var s = NewSchema()
 	s.setType(f.Type)
+	s.Nullable = f.Nullable
 
 	// if it's a module loader, construct a special case (sub)schema
 	if len(f.Loader) > 0 {
@@ -77,6 +79,7 @@ func (f Interface) toSchema() *Schema {
 			cs.setType("array")
 			cs.ArrayItems = NewSchema()
 			cs.ArrayItems.setType(nest.Type)
+			cs.ArrayItems.Nullable = nest.Nullable
 			cs.ArrayItems.Properties = props
 
 			// nested schema
@@ -111,6 +114,14 @@ func (f Interface) toSchema() *Schema {
 
 // populate populates the Interface with the type of s.
 func (f *Interface) populate(s interface{}) {
+
+	if s == nil {
+		// interface{} (s == <nil>) is marshalled to ["string", "null"] for the time being
+		f.Type = "string"
+		f.Nullable = true
+		return
+	}
+
 	v := reflect.ValueOf(s)
 
 	elemVal := func() interface{} { return reflect.Zero(v.Type().Elem()).Interface() }
