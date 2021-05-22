@@ -55,7 +55,7 @@ func (f Interface) goPkg() string {
 func (f Interface) toSchema() *Schema {
 	var s = NewSchema()
 	s.setType(f.Type)
-	s.Nullable = f.Nullable
+	s.nullable = f.Nullable
 
 	// if it's a module loader, construct a special case (sub)schema
 	if len(f.Loader) > 0 {
@@ -79,7 +79,7 @@ func (f Interface) toSchema() *Schema {
 			cs.setType("array")
 			cs.ArrayItems = NewSchema()
 			cs.ArrayItems.setType(nest.Type)
-			cs.ArrayItems.Nullable = nest.Nullable
+			cs.ArrayItems.nullable = nest.Nullable
 			cs.ArrayItems.Properties = props
 
 			// nested schema

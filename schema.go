@@ -27,7 +27,6 @@ type Schema struct {
 	Description         string `json:"description,omitempty"`
 	MarkdownDescription string `json:"markdownDescription,omitempty"`
 	Type                string `json:"type,omitempty"`
-	Nullable            bool   `json:"-"`
 	Ref                 string `json:"$ref,omitempty"`
 
 	ArrayItems           *Schema            `json:"items,omitempty"`
@@ -52,6 +51,7 @@ type Schema struct {
 	goPkg               string
 	description         string
 	markdownDescription string
+	nullable            bool
 }
 
 func godocLink(pkg string) string {
@@ -124,7 +124,7 @@ func (s *Schema) setRef(moduleID string) {
 // MarshalJSON allows to marshal Schema.Type as string or list
 func (s *Schema) MarshalJSON() ([]byte, error) {
 	type Alias Schema
-	if s.Nullable {
+	if s.nullable {
 		return json.Marshal(&struct {
 			Type [2]string `json:"type"`
 			*Alias
