@@ -69,10 +69,10 @@ Below is a config for [coc-json](https://github.com/neoclide/coc-json) and [coc-
 
 ## Features
 
-| Modules     | Intellisense | Documentation |
-| ----------- | ------------ | ------------- |
-| Standard    | Supported    | Supported     |
-| Third Party | Supported    | Planned       |
+| Modules     | Intellisense | Documentation                                          |
+| ----------- | ------------ | ------------------------------------------------------ |
+| Standard    | Supported    | Supported                                              |
+| Third Party | Supported    | Supported (if plugin is registered on caddyserver.com) |
 
 ## License
 
