@@ -50,8 +50,11 @@ type DocStruct struct {
 
 // DocAPIResp is the API response for a namespace documentation request.
 type DocAPIResp struct {
-	Structure  *DocStruct   `json:"structure,omitempty"`
-	Namespaces DocNamespace `json:"namespaces,omitempty"`
+	StatusCode int `json:"status_code"`
+	Result     struct {
+		Structure  *DocStruct   `json:"structure,omitempty"`
+		Namespaces DocNamespace `json:"namespaces,omitempty"`
+	} `json:"result"`
 }
 
 // DocNamespace is the API response structure for namespaces

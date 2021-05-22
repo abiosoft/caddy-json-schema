@@ -12,7 +12,7 @@ The generated schema is for the caddy binary. i.e. all modules in the binary wil
 be include in the schema.
 
 ```sh
-xcaddy build v2.0.0 \
+xcaddy build v2.4.1 \
     --with github.com/abiosoft/caddy-json-schema \
     # any other module you want to include in the generated schema
 ```
@@ -42,7 +42,7 @@ flags:
 
 `caddy json-schema --vscode` generates Visual Studio Code configuration in the current directory.
 
-Open the directory in Visual Studio Code and it should just work. 
+Open the directory in Visual Studio Code and it should just work.
 Ensure the config filename is of the format `*caddy*.[json|yaml]`.
 
 **Note** that you need [vscode-yaml](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) plugin to get similar experience for YAML files.
@@ -55,29 +55,24 @@ Below is a config for [coc-json](https://github.com/neoclide/coc-json) and [coc-
 
 ```json
 {
-    "json.schemas": [
-        {
-            "fileMatch": [
-                "*caddy*.json"
-            ],
-            "url": "./caddy_schema.json"
-        }
-    ],
-    "yaml.schemas": {
-        ".vscode/caddy_schema.json": [
-            "*caddy*.yaml",
-            "*caddy*.yml"
-        ]
+  "json.schemas": [
+    {
+      "fileMatch": ["*caddy*.json"],
+      "url": "./caddy_schema.json"
     }
+  ],
+  "yaml.schemas": {
+    ".vscode/caddy_schema.json": ["*caddy*.yaml", "*caddy*.yml"]
+  }
 }
 ```
 
 ## Features
 
-| Modules | Intellisense | Documentation |
-|---------|--------------|---------------|
-| Standard| Supported | Supported |
-| Third Party| Supported | Planned |
+| Modules     | Intellisense | Documentation |
+| ----------- | ------------ | ------------- |
+| Standard    | Supported    | Supported     |
+| Third Party | Supported    | Planned       |
 
 ## License
 

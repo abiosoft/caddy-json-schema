@@ -3,6 +3,7 @@ package jsonschema
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -13,17 +14,14 @@ import (
 
 func loadDoc() error {
 	if err := loadRootDoc(); err != nil {
-		log.Println("catch you")
 		return err
 	}
 
 	if err := fetchAllDocumentedModules(); err != nil {
-		log.Println("catch you too")
 		return err
 	}
 
 	if err := fetchAllModuleDocs(); err != nil {
-		log.Println("catch you three")
 		return err
 	}
 
@@ -39,6 +37,9 @@ func loadRootDoc() error {
 	if err := json.Unmarshal(b, &rootDocAPIResp); err != nil {
 		return err
 	}
+	if rootDocAPIResp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status code %d from caddyserver.com", rootDocAPIResp.StatusCode)
+	}
 	return nil
 }
 
@@ -50,7 +51,7 @@ func fetchAllDocumentedModules() error {
 	visited := map[string]struct{}{}
 
 	// top level namespaces
-	for _, namespace := range rootDocAPIResp.Namespaces[""] {
+	for _, namespace := range rootDocAPIResp.Result.Namespaces[""] {
 		b, err := fetchNamespaceDoc(namespace.Name)
 		if err != nil {
 			return err
@@ -59,11 +60,14 @@ func fetchAllDocumentedModules() error {
 		if err := json.Unmarshal(b, &tmp); err != nil {
 			return err
 		}
+		if tmp.StatusCode != http.StatusOK {
+			return fmt.Errorf("unexpected status code %d from caddyserver.com", rootDocAPIResp.StatusCode)
+		}
 
 		flatCaddyDocMap[namespace.Name] = &tmp
 
 		// sub namespaces
-		for ns, list := range tmp.Namespaces {
+		for ns, list := range tmp.Result.Namespaces {
 			if ns == "" {
 				// avoid top level
 				continue
