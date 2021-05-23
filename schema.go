@@ -125,13 +125,13 @@ func (s *Schema) setRef(moduleID string) {
 func (s *Schema) MarshalJSON() ([]byte, error) {
 	type Alias Schema
 	if s.nullable {
-		return json.Marshal(&struct {
-			Type [2]string `json:"type"`
-			*Alias
+		return json.Marshal(struct {
+			Type []string `json:"type"`
+			Alias
 		}{
-			Type:  [2]string{s.Type, "null"},
-			Alias: (*Alias)(s),
+			Type:  []string{s.Type, "null"},
+			Alias: Alias(*s),
 		})
 	}
-	return json.Marshal(&struct{ *Alias }{Alias: (*Alias)(s)})
+	return json.Marshal(Alias(*s))
 }
