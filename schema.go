@@ -122,7 +122,7 @@ func (s *Schema) setRef(moduleID string) {
 }
 
 // MarshalJSON allows to marshal Schema.Type as string or list
-func (s *Schema) MarshalJSON() ([]byte, error) {
+func (s Schema) MarshalJSON() ([]byte, error) {
 	type Alias Schema
 	if s.nullable {
 		return json.Marshal(struct {
@@ -130,8 +130,8 @@ func (s *Schema) MarshalJSON() ([]byte, error) {
 			Alias
 		}{
 			Type:  []string{s.Type, "null"},
-			Alias: Alias(*s),
+			Alias: Alias(s),
 		})
 	}
-	return json.Marshal(Alias(*s))
+	return json.Marshal(Alias(s))
 }
