@@ -1,11 +1,14 @@
 package jsonschema
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"reflect"
 	"strings"
 	"unicode"
 
+	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 )
 
@@ -359,43 +362,34 @@ func (m *moduleLoaderSchemaBuilder) buildWithInlineKey() {
 
 func (m *moduleLoaderSchemaBuilder) apply(parent *Schema) {
 	// use an hack to determine the module loader type
+	switch reflect.Zero(m.f.LoaderType).Interface().(type) {
 
-	// generate schema
-	var tmp Interface
-	tmp.populate(reflect.Zero(m.f.LoaderType).Interface())
-	loaderSchema := tmp.toSchema()
-
-	// determine how nested the generated schema is
-	var nest int
-	for cs := loaderSchema; cs.ArrayItems != nil || cs.AdditionalProperties != nil; nest++ {
-		if cs.ArrayItems != nil {
-			cs = cs.ArrayItems
-		} else if cs.AdditionalProperties != nil {
-			cs = cs.AdditionalProperties
-		}
-	}
-
-	// derive the structure of the module loader from the nesting
-	// TODO: use a different approach to improve readability
-	switch nest {
-	case 1:
+	case json.RawMessage:
 		// module
 		*parent = *m.s
 		parent.setType("object")
-	case 2:
+
+	case []json.RawMessage:
+		// []module
+		parent.setType("array")
+		parent.ArrayItems = m.s
+
+	case map[string]json.RawMessage, caddy.ModuleMap:
+		// map[string]module
 		if m.f.LoaderKey == "" {
-			// map[string]module
 			*parent = *m.s
-			parent.setType("object")
 		} else {
-			// []module
-			parent.setType("array")
-			parent.ArrayItems = m.s
+			parent.AdditionalProperties = m.s
 		}
-	case 3:
+		parent.setType("object")
+
+	case []map[string]json.RawMessage, []caddy.ModuleMap, caddyhttp.RawMatcherSets:
 		// []map[string]module
 		parent.setType("array")
 		parent.ArrayItems = m.s
+
+	default:
+		fmt.Fprintf(os.Stderr, "cannot deduce type for field '%s' in module '%s' for module loader: '%v'", m.f.Name, m.f.Module, m.f.LoaderType)
 	}
 
 }
