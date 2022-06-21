@@ -54,11 +54,13 @@ func fetchAllDocumentedModules() error {
 	for _, namespace := range rootDocAPIResp.Result.Namespaces[""] {
 		b, err := fetchNamespaceDoc(namespace.Name)
 		if err != nil {
-			return err
+			fmt.Println("error fetching namespace", namespace.Name, ":", err)
+			continue
 		}
 		var tmp DocAPIResp
 		if err := json.Unmarshal(b, &tmp); err != nil {
-			return err
+			fmt.Println("error unmarshaling namespace", namespace.Name, ":", err)
+			continue
 		}
 		if tmp.StatusCode != http.StatusOK {
 			return fmt.Errorf("unexpected status code %d from caddyserver.com", rootDocAPIResp.StatusCode)
@@ -101,11 +103,13 @@ func fetchAllModuleDocs() error {
 
 		b, err := fetchNamespaceDoc(ns)
 		if err != nil {
-			return err
+			fmt.Println("error fetching namespace", ns, ":", err)
+			continue
 		}
 		var tmp DocAPIResp
 		if err := json.Unmarshal(b, &tmp); err != nil {
-			return err
+			fmt.Println("error unmarshaling namespace", ns, ":", err)
+			continue
 		}
 
 		flatCaddyDocMap[ns] = &tmp
